@@ -1,0 +1,77 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<style>
+	.square {
+		border: 1px outset black;
+		height:25px;
+		width:25px;
+		cursor:pointer;
+	}
+	.col-centered{
+	    float: none;
+	    margin: 0 auto;
+	}
+</style>
+</head>
+
+<body>
+<div class="jumbotron text-center">
+	<h2>Juegos</h2>
+	<div id="mensajeCorto"></div>	
+</div>
+
+<div class="jumbotron text-center">
+	Elige un juego<br>
+	<select id="selectGames"></select>
+	<button onclick="joinToMatch()">Empezar partida</button>
+</div>
+
+<script>
+	function joinToMatch() {
+		var info = {
+			type : "JoinToMatch",
+			game : selectGames.value
+		};
+		
+		var data = {
+			data : JSON.stringify(info),
+			url : "joinToMatch",
+			type : "post",
+			contentType: 'application/json',
+			dataType : 'json',
+			success : function(response) {
+				if (response.type=="match") {
+					var match = response.match;
+					sessionStorage.idMatch = match.idMatch;
+					sessionStorage.started = match.started;
+					window.location.href="game.html";
+				}
+			},
+			error : function(response) {
+				alert(response.message);
+			}
+		};
+		$.ajax(data);
+	}
+
+	getGames();
+	
+	function getGames() {
+		$.get("getGames", function(juegos) {
+			var options = "";
+			for (var i=0; i<juegos.length; i++) {
+				options = options + "<option>" + juegos[i] + "</option>";
+			}
+			selectGames.innerHTML = options;
+		});
+	}
+</script>
+
+</body>
+</html>

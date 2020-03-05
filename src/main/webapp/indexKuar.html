@@ -1,0 +1,323 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="js/Game.js"></script>
+
+<style>
+	.square {
+		border: 1px outset black;
+		height:25px;
+		width:25px;
+		cursor:pointer;
+	}
+	.col-centered{
+	    float: none;
+	    margin: 0 auto;
+	}
+</style>
+
+</head>
+<body data-ng-app="GamesApp" data-ng-controller="GamesController">
+
+<div class="jumbotron text-center">
+	<h2>Juegos</h2>
+	<div id="mensajeCorto"></div>	
+</div>
+
+<div class="jumbotron text-center">
+	<div class="row" id="divMenu">
+		<div class="col-sm-3"></div>
+		<div class="col-sm-3" id="mostrarLogin">
+			<a>Login</a>
+		</div>
+		<div class="col-sm-3" id="mostrarRegistro">
+			<a>Registro</a>
+		</div>
+		<div class="col-sm-3"></div>
+	</div>
+	<div class="row" id="logout" style="display:none">
+		<div class="col-sm-4"></div>
+		<div class="col-sm-2">
+			<a data-ng-click="logout()">Salir</a>
+		</div>
+		<div class="col-sm-4"></div>
+	</div>
+	
+	<div class="container" id="divFormularios">
+		<div class="row">
+			<div class="col-sm-12 col-centered">
+				<div id="divLogin" style="display:none">
+					<b>Login</b><br>
+					<input type="text" id="loginUserName" data-ng-model="userName" placeholder="user name"><br>
+					<input type="password" id="loginPwd" data-ng-model="pwd" placeholder="password"><br>
+					<button data-ng-click="login()" id="btnLogin">Login</button><br>
+					<button data-ng-click="solicitarToken()" id="btnRecuperarPwd">Recuperar password</button><br>
+				</div>
+				<div id="divRegistro" style="display:none">
+					<b>Registro</b><br>
+					<input type="email" placeholder="email" data-ng-model="email" id="registroEmail"><br>
+					<input type="text" placeholder="user name" data-ng-model="userName" id="registroUserName"><br>
+					<input type="password" placeholder="password" data-ng-model="pwd1" id="registroPwd1"><br>
+					<input type="password" placeholder="repeat your password" data-ng-model="pwd2" id="registroPwd2"><br>
+					<button data-ng-click="register()" id="registroBtn">Register</button><br>
+				</div>
+				<div id="divSeleccionDeJuego" style="display:none">
+					<select data-ng-model="game.name" data-ng-options="game for game in games"></select>
+					<button data-ng-click="joinGame()" id="buttonJoinGame">Join game</button>	
+				</div>
+			</div>
+		</div>
+		
+		<div class="container" id="divPartida">
+			<div class="row">
+				<div class="col-sm-12" id="opponent">
+				</div>
+				<div class="col-sm-12" id="tictactoeBoard" style="display:none">
+					<table border="1">
+						<tr>
+							<td>
+								<button data-ng-click="move([0,0])" class="square" id="00"></button>
+								<button data-ng-click="move([0,1])" class="square" id="01"></button>
+								<button data-ng-click="move([0,2])" class="square" id="02"></button><br>
+								<button data-ng-click="move([1,0])" class="square" id="10"></button>
+								<button data-ng-click="move([1,1])" class="square" id="11"></button>
+								<button data-ng-click="move([1,2])" class="square" id="12"></button><br>
+								<button data-ng-click="move([2,0])" class="square" id="20"></button>
+								<button data-ng-click="move([2,1])" class="square" id="21"></button>
+								<button data-ng-click="move([2,2])" class="square" id="22"></button><br>
+							</td>
+						</tr>
+					</table>				
+				</div>
+				<div class="col-sm-12" id="turnTTT">
+				</div>
+				<div class="col-sm-12" id="messagesTTT">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+$(document).ready(function() {
+	$("#mostrarLogin").click(function() {
+		$('#divLogin').show();
+		$('#divRegistro').hide()
+	}),
+	$("#mostrarRegistro").click(function() {
+		$('#divLogin').hide();
+		$('#divRegistro').show()
+	})
+});
+
+var app=angular.module("GamesApp", []);
+app.controller("GamesController", function($scope, $http) {
+	$scope.ws=null;
+	$scope.userName="";
+	$scope.pwd="";
+	$scope.pwd1="";
+	$scope.pwd2="";
+	$scope.email="";
+	$scope.rowOrigin=null;
+	$scope.colOrigin=null;
+	$scope.idMatch=null;
+	$scope.estado="Desconectado";
+	
+	$scope.send = function(jso) {
+		if ($scope.ws==null)
+			$scope.conectar();
+		$scope.ws.send(JSON.stringify(jso));
+	}
+	
+	$scope.login = function() {
+		var data = { 
+			type : "ClassicLogin",
+			userName : $scope.userName, 
+			pwd : $scope.pwd
+		};
+		$scope.send(data);
+	}
+	
+	$scope.register = function() {
+		var data = { 
+			type : "ClassicRegister",
+			userName : $scope.userName, 
+			email : $scope.email,
+			pwd1 : $scope.pwd1,
+			pwd2 : $scope.pwd2
+		};
+		$scope.send(data);
+	}
+	
+	$scope.loadGames = function() {
+		var p= "p=" + JSON.stringify({type:"GetGames"});
+		$http.get("getGames.jsp?"+p).then(
+			function(response) {
+				var type=response.data.type;
+				var resultado=response.data.resultado;
+				if (type=="OK") {
+					$scope.games=resultado.games;
+				}
+			}
+		);
+	};
+
+	$scope.joinGame = function() {
+		var recurso="joinGame.jsp";
+		var data = { 
+			type : "JoinGame",
+			userName : $scope.userName,
+			gameName : $scope.game.name
+		};
+		$scope.send(data);
+	};
+		
+	$scope.solicitarToken = function() {
+		var recurso="requestToken.jsp";
+		var data="userName=" + $scope.userName;
+		var config = {
+				headers : {
+					'Content-Type' : 'application/x-www-form-urlencoded'
+				}		
+			};
+		$http.post(recurso, data, config).then(
+			function(respuesta) {
+				sessionStorage.token=respuesta.data.id;
+				$("#mensajeCorto").html("<a href='resetPwd.html'>Haz clic aquí</a>");
+			},
+			function(respuesta) {
+				$("#mensajeCorto").html(respuesta.data.message);
+			}
+		);
+	};
+	
+	$scope.conectar = function() {
+		if ($scope.ws!=null)
+			return;
+		$scope.ws=new WebSocket("ws://localhost:8600/gamesMongoDB/gamews");
+		$scope.ws.onopen = function() {
+			$scope.$apply($scope.estado="Conectado");
+		}
+		
+		$scope.ws.onmessage = function(mensaje) {
+			var data=JSON.parse(mensaje.data);
+			var type=data.type;
+			console.log(data);
+			
+			if (type=="LoginResponse") {
+				$scope.userName=data.name;
+				$("#divMenu").hide();
+				$("#divLogin").hide();
+				$("#divRegistro").hide();
+				$("#logout").show();
+				$("#divSeleccionDeJuego").show();
+				sessionStorage.userName=$scope.name;
+				$("#mensajeCorto").html("Conectado como " + $scope.userName);
+				$scope.loadGames();
+				return;
+			}
+			if (type=="RegisterResponse") {
+				$("#mensajeCorto").html("Registrado correctamente");
+				return;
+			}
+			if (type=="WaitingMatch") {
+				$("#divSeleccionDeJuego").hide();
+				$("#opponent").show().html("Esperando oponente (" + data.idMatch + ")");
+				return;
+			}
+			if (type=="Match") {
+				$("#tictactoeBoard").show();
+				$scope.idMatch=data.data.idMatch;
+				var valores=data.data.board.content.split(",");
+				var cont=0;
+				for (var i=0; i<3; i++) {
+					for (var j=0; j<3; j++) {
+						var casilla=document.getElementById(i+""+j);
+						if (valores[cont]!="0")
+							casilla.innerHTML=valores[cont];
+						cont++;
+					}
+				}
+			}
+			if (type=="Movement") {
+				data=data.data;
+				var rowOrigin=data.rowOrigin;
+				var colOrigin=data.colOrigin;
+				var rowDestination=data.rowDestination;
+				var colDestination=data.colDestination;
+				var origen=document.getElementById(rowOrigin+""+colOrigin);
+				var dest=document.getElementById(rowDestination+""+colDestination);
+				
+				var valor=origen.innerHTML;
+				origen.innerHTML="";
+				dest.innerHTML=valor;
+			}
+			
+			if (type=="Error") {
+				$("#messagesTTT").html(mensaje.data.message);
+			}
+		}
+		
+		$scope.ws.onerror = function(mensaje) {
+			$scope.$apply($scope.estado="Error: " + mensaje.data);
+			console.log("Error: " + mensaje.data);
+		}
+		
+		$scope.ws.onclose = function(mensaje) {
+			$scope.$apply($scope.estado="Closed");
+		}
+	};
+	
+	$scope.move = function(coordinates) {
+		if ($scope.rowOrigin==null) {
+			$scope.rowOrigin=coordinates[0];
+			$scope.colOrigin=coordinates[1];
+			return;
+		}
+		var movement=[$scope.rowOrigin, $scope.colOrigin, coordinates[0], coordinates[1]]; 
+		var p = {
+			type : "Movement",
+			coordinates : movement,
+			idMatch : $scope.idMatch,
+			userName : $scope.userName
+		};
+		var origen=document.getElementById($scope.rowOrigin+""+$scope.colOrigin);
+		var dest=document.getElementById(coordinates[0]+""+coordinates[1]);
+		
+		var valor=origen.innerHTML;
+		origen.innerHTML="";
+		dest.innerHTML=valor;
+		
+		$scope.rowOrigin=null;
+		$scope.ws.send(JSON.stringify(p));
+	}
+	
+	$scope.logout = function() {
+		$http.get("logout.jsp").then(
+			function(respuesta) {
+				window.location.reload();
+			}
+		);
+	}
+});
+
+function restaurar() {	
+	for (var i=0; i<3; i++) {
+		for (var j=0; j<3; j++) {
+			document.getElementById("" + i + j).innerHTML="";
+		}
+	}
+	$("#tictactoeBoard").hide();
+	$("#opponent").hide().html("");
+	$("#turnTTT").hide().html("");
+	$("#messagesTTT").hide().html("");
+	$("#divSeleccionDeJuego").show();
+}
+</script>
+
+</body>
+</html>
