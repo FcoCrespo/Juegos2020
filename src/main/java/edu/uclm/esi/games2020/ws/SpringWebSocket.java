@@ -35,5 +35,6 @@ public class SpringWebSocket extends TextWebSocketHandler {
 		if (jso.getString("type").equals("ready")) {
 			Manager.get().playerReady(jso.getString("idMatch"), session);
 		}
+		
 	}
 }

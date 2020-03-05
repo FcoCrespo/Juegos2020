@@ -75,4 +75,8 @@ public class User {
 	public HttpSession getHttpSession() {
 		return httpSession;
 	}
+
+	public WebSocketSession getSession() {
+		return this.session;
+	}
 }

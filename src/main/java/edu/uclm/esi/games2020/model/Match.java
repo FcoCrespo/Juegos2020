@@ -1,6 +1,7 @@
 package edu.uclm.esi.games2020.model;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -14,6 +15,7 @@ public abstract class Match {
 	protected String id;
 	protected boolean started;
 	private int readyPlayers;
+	protected WebSocketSession turn;
 	@NoJSON
 	private Game game;
 	
@@ -25,6 +27,26 @@ public abstract class Match {
 	public void addPlayer(User user) {
 		this.players.add(user);
 		setState(user);
+	}
+	
+	public String rotateTurn(WebSocketSession lastTurn) {
+		
+		int pos = 0;
+		
+		for(User u : this.players) {
+			if(u.getSession() == lastTurn) {
+				pos = players.indexOf(u);
+				if(pos == (players.size()-1)) {
+					pos = 0;
+				}else {
+					pos++;
+					break;
+				}
+			}
+		}
+		this.turn = players.get(pos).getSession();
+		return players.get(pos).getUserName();
+		
 	}
 	
 	protected abstract void setState(User user); 
@@ -54,9 +76,28 @@ public abstract class Match {
 		return jso;
 	}
 
+	public void notifyTurn(String name) throws IOException{
+		JSONObject jso = this.toJSON();
+		jso.put("type", "matchChangeTurn");
+		for (User player : this.players) {
+			jso.put("turn", name);
+			player.send(jso);
+		}
+	}
+	
 	public void notifyStart() throws IOException {
 		JSONObject jso = this.toJSON();
 		jso.put("type", "matchStarted");
+		for (User player : this.players) {
+			jso.put("startData", startData(player));
+			player.send(jso);
+		}
+	}
+	
+	public void notifyFinish(String result) throws IOException {
+		JSONObject jso = this.toJSON();
+		jso.put("type", "matchFinished");
+		jso.put("result", result);
 		for (User player : this.players) {
 			jso.put("startData", startData(player));
 			player.send(jso);
@@ -75,5 +116,17 @@ public abstract class Match {
 
 	public boolean ready() {
 		return this.readyPlayers==game.requiredPlayers;
+	}
+
+	public String inicializaTurn() throws IOException {
+		SecureRandom sr = null;
+		try {
+		    sr = SecureRandom.getInstance("SHA1PRNG");
+		} catch (Exception e) {
+		    e.printStackTrace();
+		} 
+		User u = players.get(sr.nextInt(players.size()));
+		this.notifyTurn(rotateTurn(u.getSession()));
+		return u.getUserName();
 	}
 }

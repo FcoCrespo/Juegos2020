@@ -13,8 +13,7 @@ public class TresEnRaya extends Game {
 
 	@Override
 	protected Match buildMatch() {
-		// TODO Auto-generated method stub
-		return null;
+		return new TresEnRayaMatch();
 	}
 
 }
