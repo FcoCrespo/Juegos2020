@@ -131,7 +131,7 @@ app.controller("GamesController", function($scope, $http) {
 		if ($scope.ws==null)
 			$scope.conectar();
 		$scope.ws.send(JSON.stringify(jso));
-	}
+	};
 	
 	$scope.login = function() {
 		var data = { 
@@ -140,7 +140,7 @@ app.controller("GamesController", function($scope, $http) {
 			pwd : $scope.pwd
 		};
 		$scope.send(data);
-	}
+	};
 	
 	$scope.register = function() {
 		var data = { 
@@ -151,7 +151,7 @@ app.controller("GamesController", function($scope, $http) {
 			pwd2 : $scope.pwd2
 		};
 		$scope.send(data);
-	}
+	};
 	
 	$scope.loadGames = function() {
 		var p= "p=" + JSON.stringify({type:"GetGames"});
@@ -201,7 +201,7 @@ app.controller("GamesController", function($scope, $http) {
 		$scope.ws=new WebSocket("ws://localhost:8600/gamesMongoDB/gamews");
 		$scope.ws.onopen = function() {
 			$scope.$apply($scope.estado="Conectado");
-		}
+		};
 		
 		$scope.ws.onmessage = function(mensaje) {
 			var data=JSON.parse(mensaje.data);
@@ -260,12 +260,12 @@ app.controller("GamesController", function($scope, $http) {
 			if (type=="Error") {
 				$("#messagesTTT").html(mensaje.data.message);
 			}
-		}
+		};
 		
 		$scope.ws.onerror = function(mensaje) {
 			$scope.$apply($scope.estado="Error: " + mensaje.data);
 			console.log("Error: " + mensaje.data);
-		}
+		};
 		
 		$scope.ws.onclose = function(mensaje) {
 			$scope.$apply($scope.estado="Closed");
@@ -294,7 +294,7 @@ app.controller("GamesController", function($scope, $http) {
 		
 		$scope.rowOrigin=null;
 		$scope.ws.send(JSON.stringify(p));
-	}
+	};
 	
 	$scope.logout = function() {
 		$http.get("logout.jsp").then(

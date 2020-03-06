@@ -50,7 +50,11 @@
 					var match = response.match;
 					sessionStorage.idMatch = match.idMatch;
 					sessionStorage.started = match.started;
-					window.location.href="game.html";
+					if(info.game.localeCompare("Tres en raya") == 0)
+						window.location.href="ter.html";
+
+					if(info.game.localeCompare("Escoba") == 0)
+						window.location.href="game.html"
 				}
 			},
 			error : function(response) {
