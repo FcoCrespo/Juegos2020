@@ -52,16 +52,11 @@ public class Manager {
 	}
 
 	public User login(HttpSession httpSession, String userName, String pwd) throws Exception {
-		try {
-			User user = UserDAO.identify(userName, pwd);
-			user.setHttpSession(httpSession);
-			this.connectedUsersByUserName.put(userName, user);
-			this.connectedUsersByHttpSession.put(httpSession.getId(), user);
-			return user;
-		}
-		catch(SQLException e) {
-			throw new Exception("Credenciales inválidas");
-		}
+		User user = UserDAO.identify(userName, pwd);
+		user.setHttpSession(httpSession);
+		this.connectedUsersByUserName.put(userName, user);
+		this.connectedUsersByHttpSession.put(httpSession.getId(), user);
+		return user;
 	}
 	
 	public void register(String email, String userName, String pwd) throws Exception {

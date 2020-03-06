@@ -5,35 +5,35 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public abstract class Game {
-	protected int requiredPlayers;
-	protected Queue<Match> pendingMatches;
-	protected ConcurrentHashMap<String, Match> inPlayMatches;
-	
-	public Game(int requiredPlayers) {
-		this.requiredPlayers = requiredPlayers;
-		this.pendingMatches = new LinkedBlockingQueue<>();
-		this.inPlayMatches = new ConcurrentHashMap<>();
-	}
+    protected int requiredPlayers;
+    protected Queue<Match> pendingMatches;
+    protected ConcurrentHashMap<String, Match> inPlayMatches;
 
-	public abstract String getName();
+    public Game(int requiredPlayers) {
+        this.requiredPlayers = requiredPlayers;
+        this.pendingMatches = new LinkedBlockingQueue<>();
+        this.inPlayMatches = new ConcurrentHashMap<>();
+    }
 
-	public Match joinToMatch(User user) {
-		Match match = this.pendingMatches.peek();
-		if (match==null) {
-			match = buildMatch();
-			match.setGame(this);
-			match.addPlayer(user);
-			this.pendingMatches.add(match);
-		} else {
-			match.addPlayer(user);
-			if (match.getPlayers().size() == this.requiredPlayers) {
-				this.pendingMatches.poll();
-				this.inPlayMatches.put(match.getId(), match);
-			}
-		}
-		return match;
-	}
+    public abstract String getName();
 
-	protected abstract Match buildMatch();
-	
+    public Match joinToMatch(User user) {
+        Match match = this.pendingMatches.peek();
+        if (match == null) {
+            match = buildMatch();
+            match.setGame(this);
+            match.addPlayer(user);
+            this.pendingMatches.add(match);
+        } else {
+            match.addPlayer(user);
+            if (match.getPlayers().size() == this.requiredPlayers) {
+                this.pendingMatches.poll();
+                this.inPlayMatches.put(match.getId(), match);
+            }
+        }
+        return match;
+    }
+
+    protected abstract Match buildMatch();
+
 }

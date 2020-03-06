@@ -10,17 +10,17 @@ import org.springframework.web.socket.server.standard.ServletServerContainerFact
 @Configuration
 @EnableWebSocket
 public class SpringConfigurer implements WebSocketConfigurer {
-	@Bean
-	public ServletServerContainerFactoryBean createWebSocketContainer() {
-		ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
-		container.setMaxTextMessageBufferSize(2*1024*1024);
-		return container;
-	}
+    @Bean
+    public ServletServerContainerFactoryBean createWebSocketContainer() {
+        ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
+        container.setMaxTextMessageBufferSize(2 * 1024 * 1024);
+        return container;
+    }
 
-	@Override
-	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-		SpringWebSocket webSocket = new SpringWebSocket();
-		registry.addHandler(webSocket, "juegos").setAllowedOrigins("*");
-	}
+    @Override
+    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+        SpringWebSocket webSocket = new SpringWebSocket();
+        registry.addHandler(webSocket, "juegos").setAllowedOrigins("*");
+    }
 
 }

@@ -13,70 +13,70 @@ import edu.uclm.esi.games2020.dao.UserDAO;
 
 @Tabla(tabla = "Usuarios")
 public class User {
-	private String userName;
-	@NoJSON
-	private String email;
-	@NoJSON 
-	private WebSocketSession session;
-	@NoJSON
-	private IState state;
-	@NoJSON
-	private HttpSession httpSession;
-	
-	@Autoejecutable
-	public void imprimir() {
-		System.out.println("Hola");
-	}
-	
-	public void setState(IState state) {
-		this.state = state;
-	}
-	
-	public String getUserName() {
-		return userName;
-	}
-	
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-	
-	public String getEmail() {
-		return email;
-	}
-	
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    private String userName;
+    @NoJSON
+    private String email;
+    @NoJSON
+    private WebSocketSession session;
+    @NoJSON
+    private IState state;
+    @NoJSON
+    private HttpSession httpSession;
 
-	public static User identify(String userName, String pwd) throws Exception {
-		return UserDAO.identify(userName, pwd);
-	}
+    @Autoejecutable
+    public void imprimir() {
+        System.out.println("Hola");
+    }
 
-	public JSONObject toJSON() {
-		return new JSONObject().put("userName", this.userName);
-	}
+    public void setState(IState state) {
+        this.state = state;
+    }
 
-	public void setSession(WebSocketSession session) {
-		this.session = session;
-	}
+    public String getUserName() {
+        return userName;
+    }
 
-	public void send(JSONObject json) throws IOException {
-		this.session.sendMessage(new TextMessage(json.toString()));		
-	}
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
-	public IState getState() {
-		return this.state;
-	}
+    public String getEmail() {
+        return email;
+    }
 
-	public void setHttpSession(HttpSession httpSession) {
-		this.httpSession = httpSession;
-	}
-	
-	public HttpSession getHttpSession() {
-		return httpSession;
-	}
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-	public WebSocketSession getSession() {
-		return this.session;
-	}
+    public static User identify(String userName, String pwd) throws Exception {
+        return UserDAO.identify(userName, pwd);
+    }
+
+    public JSONObject toJSON() {
+        return new JSONObject().put("userName", this.userName);
+    }
+
+    public void setSession(WebSocketSession session) {
+        this.session = session;
+    }
+
+    public void send(JSONObject json) throws IOException {
+        this.session.sendMessage(new TextMessage(json.toString()));
+    }
+
+    public IState getState() {
+        return this.state;
+    }
+
+    public void setHttpSession(HttpSession httpSession) {
+        this.httpSession = httpSession;
+    }
+
+    public HttpSession getHttpSession() {
+        return httpSession;
+    }
+
+    public WebSocketSession getSession() {
+        return this.session;
+    }
 }

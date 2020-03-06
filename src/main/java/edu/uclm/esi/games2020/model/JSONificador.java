@@ -41,10 +41,8 @@ public class JSONificador {
 				type==Double.class || type==Long.class || type==Boolean.class ||
 				type==Byte.class || type==Short.class || type==Character.class)
 			return true;
-		if (type.isEnum())
-			return true;
-		return false;
-	}
+        return type.isEnum();
+    }
 
 	private static JSONArray toJSONArray(Object valor) {
 		List list = (List) valor;
