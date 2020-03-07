@@ -1,3 +1,6 @@
+var url = "ws://localhost:8600/juegos";
+var ws = new WebSocket(url);
+
 function ViewModel() {
     var self = this;
     self.usuarios = ko.observableArray([]);
@@ -7,12 +10,7 @@ function ViewModel() {
     var idMatch = sessionStorage.idMatch;
     var started = JSON.parse(sessionStorage.started);
     self.mensaje = ko.observable("");
-    if (started) {
-        self.mensaje("La partida " + idMatch + " ha comenzado");
-    } else {
-        self.mensaje("Esperando oponente para la partida " + idMatch);
-    }
-
+    self.mensaje("La partida " + idMatch + " ha comenzado");
     self.ponerEnMesa = function (carta) {
         var msg = {
             type: "carta a la mesa",
@@ -20,9 +18,6 @@ function ViewModel() {
         };
         ws.send(JSON.stringify(msg));
     };
-
-    var url = "ws://localhost:8600/juegos";
-    var ws = new WebSocket(url);
 
     ws.onopen = function (event) {
         var msg = {

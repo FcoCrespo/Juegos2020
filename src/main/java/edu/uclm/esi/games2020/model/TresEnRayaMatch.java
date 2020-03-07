@@ -19,7 +19,7 @@ public class TresEnRayaMatch extends Match {
     }
 
     @Override
-    public void start() throws IOException {
+    public void start() throws Exception {
         this.started = true;
         super.notifyStart();
         super.inicializaTurn();
@@ -37,7 +37,7 @@ public class TresEnRayaMatch extends Match {
 
     @Override
     protected void setState(User user) {
-        IState state = new EscobaState();
+        IState state = new TERState();
         user.setState(state);
         state.setUser(user);
     }
@@ -73,6 +73,7 @@ public class TresEnRayaMatch extends Match {
 
     }
 
+    // Devuelve false si el tablero no está completo y true si lo esta
     private boolean fullTable() {
 
         boolean b = true;

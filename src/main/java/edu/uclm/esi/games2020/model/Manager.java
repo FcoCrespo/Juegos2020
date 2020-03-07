@@ -77,7 +77,7 @@ public class Manager {
 	}
 
 	
-	public void playerReady(String idMatch, WebSocketSession session) throws IOException {
+	public void playerReady(String idMatch, WebSocketSession session) throws Exception {
 		Match match = this.pendingMatches.get(idMatch);
 		match.playerReady(session);
 		if (match.ready()) {

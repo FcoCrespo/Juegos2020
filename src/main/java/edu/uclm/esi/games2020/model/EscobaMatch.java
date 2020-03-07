@@ -23,7 +23,7 @@ public class EscobaMatch extends Match {
     }
 
     @Override
-    public void start() throws IOException {
+    public void start() throws Exception {
         this.started = true;
         super.notifyStart();
     }

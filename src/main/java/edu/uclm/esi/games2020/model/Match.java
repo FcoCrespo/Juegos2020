@@ -5,6 +5,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -59,7 +60,7 @@ public abstract class Match {
         return id;
     }
 
-    public abstract void start() throws IOException;
+    public abstract void start() throws Exception;
 	
 	/*public JSONObject toJSON() {
 		return JSONificador.toJSON(this);
@@ -85,7 +86,7 @@ public abstract class Match {
         }
     }
 
-    public void notifyStart() throws IOException {
+    public void notifyStart() throws IOException, InterruptedException {
         JSONObject jso = this.toJSON();
         jso.put("type", "matchStarted");
         for (User player : this.players) {

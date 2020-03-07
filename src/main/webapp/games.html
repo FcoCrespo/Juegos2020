@@ -50,11 +50,13 @@
 					var match = response.match;
 					sessionStorage.idMatch = match.idMatch;
 					sessionStorage.started = match.started;
-					if(info.game.localeCompare("Tres en raya") == 0)
-						window.location.href="ter.html";
-
-					if(info.game.localeCompare("Escoba") == 0)
-						window.location.href="game.html"
+					sessionStorage.game = info.game;
+					if (sessionStorage.game = "Escoba"){
+						window.location.href="escoba.html"
+					}
+					if (sessionStorage.game = "Tres En Raya"){
+						window.location.href="ter.html"
+					}
 				}
 			},
 			error : function(response) {
