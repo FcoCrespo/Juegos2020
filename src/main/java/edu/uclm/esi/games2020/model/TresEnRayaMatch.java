@@ -15,7 +15,7 @@ public class TresEnRayaMatch extends Match {
 
         for (int i = 0; i < this.tablero.length; i++)
             for (int j = 0; j < this.tablero[i].length; j++)
-                this.tablero[i][j] = 0;
+                this.tablero[i][j] = -1;
     }
 
     @Override
@@ -49,9 +49,7 @@ public class TresEnRayaMatch extends Match {
         }
 
         try {
-
-            return this.tablero[lugar_x][lugar_y] == 0;
-
+            return this.tablero[lugar_x][lugar_y] == -1;
         } catch (IndexOutOfBoundsException e) {
             return false;
         }
@@ -60,15 +58,12 @@ public class TresEnRayaMatch extends Match {
 
     public int doPlay(WebSocketSession session, int lugar_x, int lugar_y) {
 
-        int i = 0;
+        int i = this.getPosOfSession(session);
 
-        for (User u : this.players) {
-            if (u.getSession() == session) {
-                i = this.players.indexOf(u);
-            }
+        if(i>=0){
+            this.tablero[lugar_x][lugar_y] = i;
         }
 
-        this.tablero[lugar_x][lugar_y] = i;
         return i;
 
     }
@@ -80,7 +75,7 @@ public class TresEnRayaMatch extends Match {
 
         for (int i = 0; i < this.tablero.length; i++) {
             for (int j = 0; j < this.tablero[i].length; j++) {
-                if (this.tablero[i][j] == 0) {
+                if (this.tablero[i][j] == -1) {
                     return false;
                 }
             }
@@ -102,55 +97,55 @@ public class TresEnRayaMatch extends Match {
 
     private boolean checkDiagonal1(int lugar_x, int lugar_y, int id) {
 
-        int i, j, fichasEnLinea;
-        fichasEnLinea = 0;
+        int fichasEnLinea = 0;
 
-        for (i = lugar_x, j = lugar_y; i < this.tablero.length && j < this.tablero[i].length; i++, j++) {
-        }
-
-        while (i > 0 && j > 0) {
-
-            if (this.tablero[i][j] == id) {
+        for (int i = lugar_x, j = lugar_y; i >= 0 && j < tablero.length; i--, j++) {
+            if(tablero[i][j] == id){
                 fichasEnLinea++;
-            } else if (fichasEnLinea < 3) {
+            }else if (fichasEnLinea<3){
                 fichasEnLinea = 0;
             }
-            i--;
-            j--;
+        }
+
+        for(int i = lugar_x+1, j = lugar_y-1; i < tablero.length && j>=0; i++, j--){
+            if(tablero[i][j] == id){
+                fichasEnLinea++;
+            }else if (fichasEnLinea<3){
+                fichasEnLinea = 0;
+            }
         }
 
         return fichasEnLinea >= 3;
     }
 
     private boolean checkDiagonal2(int lugar_x, int lugar_y, int id) {
+        int fichasEnLinea = 0;
 
-        int i, j, fichasEnLinea;
-        fichasEnLinea = 0;
-
-        for (i = lugar_x, j = lugar_y; i > 0 && j < this.tablero[i].length; i--, j++) {
-        }
-
-        while (i > this.tablero.length && j > 0) {
-
-            if (this.tablero[i][j] == id) {
+        for (int i = lugar_x, j = lugar_y; i >= 0 && j >= 0; i--, j--) {
+            if(tablero[i][j] == id){
                 fichasEnLinea++;
-            } else if (fichasEnLinea < 3) {
+            }else if (fichasEnLinea<3){
                 fichasEnLinea = 0;
             }
-            i++;
-            j--;
+        }
+
+        for (int i = lugar_x+1, j = lugar_y+1; i < tablero.length && j < tablero.length; i++, j++) {
+            if(tablero[i][j] == id){
+                fichasEnLinea++;
+            }else if (fichasEnLinea<3){
+                fichasEnLinea = 0;
+            }
         }
 
         return fichasEnLinea >= 3;
     }
 
     private boolean checkFila(int lugar_x, int id) {
-
         int fichasEnLinea = 0;
 
-        for (int j = 0; j < this.tablero[0].length; j++) {
+        for (int j = 0; j < tablero[0].length; j++) {
 
-            if (this.tablero[lugar_x][j] == id) {
+            if (tablero[lugar_x][j] == id) {
                 fichasEnLinea++;
             } else if (fichasEnLinea < 3) {
                 fichasEnLinea = 0;
@@ -160,12 +155,11 @@ public class TresEnRayaMatch extends Match {
     }
 
     private boolean checkColumna(int lugar_y, int id) {
-
         int fichasEnLinea = 0;
 
-        for (int i = 0; i < this.tablero.length; i++) {
+        for (int i = 0; i < tablero.length; i++) {
 
-            if (this.tablero[i][lugar_y] == id) {
+            if (tablero[i][lugar_y] == id) {
                 fichasEnLinea++;
             } else if (fichasEnLinea < 3) {
                 fichasEnLinea = 0;
@@ -175,5 +169,20 @@ public class TresEnRayaMatch extends Match {
     }
 
 
+    public void notifyPlay(WebSocketSession session, int lugar_x, int lugar_y) throws IOException {
+        int pos = this.getPosOfSession(session);
+        if(pos>=0) {
+            JSONObject jso = this.toJSON();
+            jso.put("type", "matchPlay");
+            String name = players.get(pos).getUserName();
+            jso.put("playName", name);
+            jso.put("play_x", lugar_x);
+            jso.put("play_y", lugar_y);
+            for (User player : this.players) {
+                player.send(jso);
+            }
+        }
+
+    }
 }
 

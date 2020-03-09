@@ -99,7 +99,9 @@ public class Manager {
 			TresEnRayaMatch ter = (TresEnRayaMatch) this.inPlayMatches.get(idMatch);
 			
 			if(ter.verifyPlay(session, lugar_x, lugar_y)) {
-			
+
+				ter.notifyPlay(session, lugar_x, lugar_y);
+
 				int w = ter.winner(lugar_x, lugar_y, ter.doPlay(session, lugar_x, lugar_y));
 
 				if(w == -1) {
@@ -111,6 +113,8 @@ public class Manager {
 					String result = ter.players.get(w).getUserName() + " ha ganado la partida";
 					ter.notifyFinish(result);
 				}
+			}else {
+				ter.notifyInvalidPlay(session);
 			}
 		}
 	}

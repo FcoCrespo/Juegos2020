@@ -64,15 +64,11 @@
 	<div data-bind="html : mensaje"></div>	
 </div>
 
-<!-- ko foreach : usuarios -->
-<span data-bind="html : $data"></span><br>
-<!-- /ko -->
-
 <div class="container" id="main">
 
 <!-- ko foreach : { data: tablero, as: 'row' }  -->
 	<!-- ko foreach : { data : row, as: 'cell' } -->
-		<div class="box" data-bind="attr : {id : 'box' + $parentContext.$index() + $index()}, event : { click: $root.doPlay } "></div>
+		<div class="box" data-bind="attr : {id : 'box' + $parentContext.$index() + $index()}, event : { click: $root.doPlay.bind($data, $parentContext.$index(), $index()) } "></div>
 	<!-- /ko -->
 <!-- /ko -->
 

@@ -20,6 +20,17 @@ public abstract class Match {
     @NoJSON
     private Game game;
 
+
+    protected int getPosOfSession(WebSocketSession session) {
+        int pos = -1;
+        for (User u : this.players) {
+            if (u.getSession() == session) {
+                pos = players.indexOf(u);
+            }
+        }
+        return pos;
+    }
+
     public Match() {
         this.id = UUID.randomUUID().toString();
         this.players = new ArrayList<>();
@@ -32,19 +43,14 @@ public abstract class Match {
 
     public String rotateTurn(WebSocketSession lastTurn) {
 
-        int pos = 0;
+        int pos = getPosOfSession(lastTurn);
 
-        for (User u : this.players) {
-            if (u.getSession() == lastTurn) {
-                pos = players.indexOf(u);
-                if (pos == (players.size() - 1)) {
-                    pos = 0;
-                } else {
-                    pos++;
-                    break;
-                }
-            }
+        if (pos == (players.size() - 1)) {
+            pos = 0;
+        } else {
+            pos++;
         }
+
         this.turn = players.get(pos).getSession();
         return players.get(pos).getUserName();
 
@@ -127,7 +133,17 @@ public abstract class Match {
             e.printStackTrace();
         }
         User u = players.get(sr.nextInt(players.size()));
-        this.notifyTurn(rotateTurn(u.getSession()));
-        return u.getUserName();
+        String name = rotateTurn(u.getSession());
+        this.notifyTurn(name);
+        return name;
+    }
+
+    public void notifyInvalidPlay(WebSocketSession session) throws IOException {
+        JSONObject jso = this.toJSON();
+        jso.put("type", "matchIlegalPlay");
+        jso.put("result", "Ilegal play");
+        int pos = getPosOfSession(session);
+        if(pos>=0)
+            players.get(pos).send(jso);
     }
 }
