@@ -4,20 +4,34 @@ var ws = new WebSocket(url);
 function ViewModel() {
     var self = this;
     self.usuarios = ko.observableArray([]);
-    self.cartas = ko.observableArray([]);
-    self.cartasEnMesa = ko.observableArray([]);
-
     var idMatch = sessionStorage.idMatch;
     var started = JSON.parse(sessionStorage.started);
     self.mensaje = ko.observable("");
+    self.tablero = ko.observableArray([ko.observableArray([])]);
     self.mensaje("La partida " + idMatch + " ha comenzado");
-    self.ponerEnMesa = function (carta) {
-        var msg = {
-            type: "carta a la mesa",
-            carta: carta
-        };
-        ws.send(JSON.stringify(msg));
-    };
+
+    buildTablero();
+
+
+    self.doPlay = function(fila, columna){
+
+    }
+
+
+    function buildTablero() {
+        var n = 3;
+
+        for(var i = 0; i<n; i++){
+
+            var row =  ko.observableArray([]);
+
+            for(var j = 0; j<n; j++){
+                row.push("");
+            }
+
+            self.tablero.push(row);
+        }
+    }
 
     ws.onopen = function (event) {
         var msg = {
@@ -31,20 +45,15 @@ function ViewModel() {
         var data = event.data;
         data = JSON.parse(data);
         if (data.type == "matchStarted") {
+
             self.mensaje("La partida ha empezado");
+
             var players = data.players;
+
             for (var i = 0; i < players.length; i++) {
                 var player = players[i];
                 self.usuarios.push(player.userName);
             }
-            var table = data.startData.table;
-            for (var i = 0; i < table.length; i++) {
-                self.cartasEnMesa.push(table[i]);
-            }
-            var cartas = data.startData.data;
-            for (var i = 0; i < cartas.length; i++)
-                self.cartas.push(cartas[i]);
-            console.log(data);
         }
     }
 }
