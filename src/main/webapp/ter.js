@@ -13,7 +13,11 @@ function ViewModel() {
     buildTablero();
 
 
-    self.doPlay = function(fila, columna){
+    self.doPlay = function(data, event){
+        console.log(event.target.id);
+        document.getElementById(event.target.id).innerHTML = "O";
+
+
 
     }
 

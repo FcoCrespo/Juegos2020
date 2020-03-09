@@ -72,7 +72,7 @@
 
 <!-- ko foreach : { data: tablero, as: 'row' }  -->
 	<!-- ko foreach : { data : row, as: 'cell' } -->
-		<div class="box" data-bind="attr : {id : 'box' + $parentContext.$index() + $index()}, event : { click: $root.doPlay.bind($parentContext.$index(), $index()) } "></div>
+		<div class="box" data-bind="attr : {id : 'box' + $parentContext.$index() + $index()}, event : { click: $root.doPlay } "></div>
 	<!-- /ko -->
 <!-- /ko -->
 
