@@ -30,9 +30,10 @@ public abstract class Match {
         setState(user);
     }
 
-    public String rotateTurn(WebSocketSession lastTurn) {
+    public void rotateTurn() {
 
         int pos = 0;
+        WebSocketSession lastTurn = this.turn;
 
         for (User u : this.players) {
             if (u.getSession() == lastTurn) {
@@ -46,7 +47,6 @@ public abstract class Match {
             }
         }
         this.turn = players.get(pos).getSession();
-        return players.get(pos).getUserName();
 
     }
 
@@ -77,13 +77,12 @@ public abstract class Match {
         return jso;
     }
 
-    public void notifyTurn(String name) throws IOException {
+    public void notifyTurn() throws IOException {
         JSONObject jso = this.toJSON();
         jso.put("type", "matchChangeTurn");
-        for (User player : this.players) {
-            jso.put("turn", name);
-            player.send(jso);
-        }
+        User player = this.players.get(0);
+        jso.put("turn", this.turn);
+        player.send(jso);     
     }
 
     public void notifyStart() throws IOException, InterruptedException {
@@ -119,7 +118,7 @@ public abstract class Match {
         return this.readyPlayers == game.requiredPlayers;
     }
 
-    public String inicializaTurn() throws IOException {
+    public void inicializaTurn() throws IOException {
         SecureRandom sr = null;
         try {
             sr = SecureRandom.getInstance("SHA1PRNG");
@@ -127,7 +126,7 @@ public abstract class Match {
             e.printStackTrace();
         }
         User u = players.get(sr.nextInt(players.size()));
-        this.notifyTurn(rotateTurn(u.getSession()));
-        return u.getUserName();
+        this.rotateTurn();
+        this.notifyTurn();
     }
 }

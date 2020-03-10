@@ -84,7 +84,8 @@ public class Manager {
 			this.pendingMatches.remove(idMatch);
 			this.inPlayMatches.put(idMatch, match);
 			match.notifyStart();
-			match.notifyTurn(match.inicializaTurn());
+			match.inicializaTurn();
+			match.notifyTurn();
 		}
 	}
 
@@ -103,7 +104,8 @@ public class Manager {
 				int w = ter.winner(lugar_x, lugar_y, ter.doPlay(session, lugar_x, lugar_y));
 
 				if(w == -1) {
-					ter.notifyTurn(ter.rotateTurn(session));
+					ter.rotateTurn();
+					ter.notifyTurn();
 				}else if(w == -2){
 					String result = "La partida ha finalizado en empate";
 					ter.notifyFinish(result);
@@ -113,5 +115,9 @@ public class Manager {
 				}
 			}
 		}
+	}
+
+	public Match getMatch(String idMatch) {
+		return this.inPlayMatches.get(idMatch);
 	}
 }

@@ -8,19 +8,44 @@ function ViewModel() {
     var started = JSON.parse(sessionStorage.started);
     self.mensaje = ko.observable("");
     self.tablero = ko.observableArray([ko.observableArray([])]);
-    self.mensaje("La partida " + idMatch + " ha comenzado");
-
-    buildTablero();
-
-
-    self.doPlay = function(data, event){
-        console.log(event.target.id);
-        document.getElementById(event.target.id).innerHTML = "O";
-
-
-
+    var identity = "O";
+    var turn = false;
+    if(started){
+    	self.mensaje("La partida " + idMatch + " ha comenzado");
+    	identity = "X";
     }
-
+    else{
+    	self.mensaje("Esperando rival para la partida " + idMatch);
+    }
+    
+    buildTablero();
+    turn = getTurn();
+    
+    self.doPlay = function(data, event){
+    	if(checkPlay()){
+	        console.log(event.target.id);
+	        document.getElementById(event.target.id).innerHTML = identity;
+	        rotateTurn();
+    	}
+    }
+	
+	function getTurn() {
+		$.get("getTurn");
+	}
+	
+	function rotateTurn() {
+		$.get("rotateTurn");
+		getTurn();
+	}
+    
+    function checkPlay(){
+    	
+    	if(!started)
+    		return false;
+    	if(!turn)
+    		return false;
+    	
+    }
 
     function buildTablero() {
         var n = 3;
@@ -59,6 +84,15 @@ function ViewModel() {
                 self.usuarios.push(player.userName);
             }
         }
+        
+        if (data.type == "matchChangeTurn"){
+    		var turnSession = JSON.parse(data.turn);
+    		var idSession = '<%= Session["VALUE"] %>';
+    		console.log(idSession);
+    		if(session = idSession){
+    			turn = true;
+    		}
+    	} 
     }
 }
 

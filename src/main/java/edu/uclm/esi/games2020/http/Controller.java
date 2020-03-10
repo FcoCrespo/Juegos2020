@@ -47,6 +47,16 @@ public class Controller {
     public JSONArray getGames(HttpSession session) throws Exception {
         return Manager.get().getGames();
     }
+    
+    @GetMapping("/getTurn")
+    public void getTurn(HttpSession session, String idMatch) throws Exception {
+        Manager.get().getMatch(idMatch).notifyTurn();
+    }
+    
+    @GetMapping("/rotateTurn")
+    public void rotateTurn(HttpSession session, String idMatch) throws Exception {
+        Manager.get().getMatch(idMatch).rotateTurn();
+    }
 
     @PostMapping(value = "/joinToMatchConMap", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> joinToMatchConMap(HttpSession session, HttpServletResponse response, @RequestBody Map<String, Object> info) {
