@@ -9,6 +9,8 @@ function ViewModel() {
     self.mensaje = ko.observable("");
     self.tablero = ko.observableArray([ko.observableArray([])]);
     self.mensaje("Esperando oponente para la partida " + idMatch);
+    
+    var finished = false;
 
     buildTablero();
 
@@ -24,10 +26,10 @@ function ViewModel() {
             lugar_x: (fila-1),
             lugar_y: columna
         };
-
-        ws.send(JSON.stringify(msg));
-
-
+        
+        if(!finished){
+        	ws.send(JSON.stringify(msg));
+        }
 
     }
 
@@ -82,6 +84,7 @@ function ViewModel() {
 
         if(data.type == "matchFinished"){
             self.mensaje(data.result);
+            finished = true;
         }
 
         if(data.type == "matchPlay"){
