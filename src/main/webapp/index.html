@@ -103,10 +103,10 @@ function login() {
 function register() {
 	var info = {
 		type : "Register",
-		userName : registroUserName.value,
-		email : registroEmail.value,
-		pwd1 : pwd1.value,
-		pwd2 : pwd2.value
+		userName : $("#registroUserName").val(),
+		email : $("#registroEmail").val(),
+		pwd1 : $("#pwd1").val(),
+		pwd2 : $("#pwd2").val(),
 	};
 	var data = {
 			data : JSON.stringify(info),

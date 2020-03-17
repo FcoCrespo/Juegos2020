@@ -10,6 +10,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import edu.uclm.esi.games2020.model.Manager;
+import edu.uclm.esi.games2020.model.Match;
 import edu.uclm.esi.games2020.model.User;
 
 @Component
@@ -37,7 +38,9 @@ public class SpringWebSocket extends TextWebSocketHandler {
         }
 
         if(jso.getString("type").equals("doPlayTer")){
-            Manager.get().doPlayTer(jso.getString("idMatch"), jso.getInt("lugar_x"), jso.getInt("lugar_y"), session);
+        	Match match = Manager.get().findMatch(jso.getString("idMatch"));
+        	match.play(jso, session);
+            //Manager.get().doPlayTer(jso.getString("idMatch"), jso.getInt("lugar_x"), jso.getInt("lugar_y"), session);
         }
 
     }

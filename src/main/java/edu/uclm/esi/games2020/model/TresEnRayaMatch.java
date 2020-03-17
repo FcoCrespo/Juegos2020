@@ -184,5 +184,34 @@ public class TresEnRayaMatch extends Match {
         }
 
     }
+
+	@Override
+	public void play(JSONObject jso, WebSocketSession session) throws IOException {
+	
+			int x = jso.getInt("lugar_x");
+			int y = jso.getInt("lugar_y");
+		
+			
+			if(this.verifyPlay(session, x, y)) {
+
+				this.notifyPlay(session, x, y);
+
+				int w = this.winner(x, y, this.doPlay(session, x, y));
+
+				if(w == -1) {
+					this.notifyTurn(this.rotateTurn(session));
+				}else if(w == -2){
+					String result = "La partida ha finalizado en empate";
+					this.notifyFinish(result);
+				}else {
+					String result = this.players.get(w).getUserName() + " ha ganado la partida";
+					this.notifyFinish(result);
+				}
+			}else {
+				this.notifyInvalidPlay(session);
+			}
+		
+		
+	}
 }
 

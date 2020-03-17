@@ -92,30 +92,10 @@ public class Manager {
 		return this.connectedUsersByHttpSession.get(httpSessionId);
 	}
 
-	public void doPlayTer(String idMatch, int lugar_x, int lugar_y, WebSocketSession session) throws IOException {
+	
+
+	public Match findMatch(String idMatch) {
 		
-		if(this.inPlayMatches.get(idMatch) !=  null) {
-			
-			TresEnRayaMatch ter = (TresEnRayaMatch) this.inPlayMatches.get(idMatch);
-			
-			if(ter.verifyPlay(session, lugar_x, lugar_y)) {
-
-				ter.notifyPlay(session, lugar_x, lugar_y);
-
-				int w = ter.winner(lugar_x, lugar_y, ter.doPlay(session, lugar_x, lugar_y));
-
-				if(w == -1) {
-					ter.notifyTurn(ter.rotateTurn(session));
-				}else if(w == -2){
-					String result = "La partida ha finalizado en empate";
-					ter.notifyFinish(result);
-				}else {
-					String result = ter.players.get(w).getUserName() + " ha ganado la partida";
-					ter.notifyFinish(result);
-				}
-			}else {
-				ter.notifyInvalidPlay(session);
-			}
-		}
+		return this.inPlayMatches.get(idMatch);
 	}
 }

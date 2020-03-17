@@ -6,9 +6,9 @@ function ViewModel() {
     self.usuarios = {};
     var idMatch = sessionStorage.idMatch;
     var started = JSON.parse(sessionStorage.started);
-    self.mensaje = ko.observable("");
+    self.mensaje = ko.observable("Esperando oponente para la partida " + idMatch);
     self.tablero = ko.observableArray([ko.observableArray([])]);
-    self.mensaje("Esperando oponente para la partida " + idMatch);
+  
     
     var finished = false;
 

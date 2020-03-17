@@ -146,4 +146,6 @@ public abstract class Match {
         if(pos>=0)
             players.get(pos).send(jso);
     }
+
+	abstract public void play(JSONObject jso, WebSocketSession session) throws IOException;
 }
