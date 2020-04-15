@@ -21,6 +21,7 @@
 </head>
 
 <body>
+
 <div class="jumbotron text-center">
 	<h2>Juegos</h2>
 	<div id="mensajeCorto"></div>	
@@ -55,6 +56,7 @@
 					<input type="text" placeholder="user name" id="registroUserName"><br>
 					<input type="password" placeholder="password" id="pwd1"><br>
 					<input type="password" placeholder="repeat your password" id="pwd2"><br>
+					<input type="text" onkeypress='validate(event)' placeholder="Credit Account" id="cuenta"><br>
 					<button onclick="register()" id="registroBtn">Register</button><br>
 				</div>
 				<div id="divSeleccionDeJuego" style="display:none">
@@ -76,7 +78,34 @@ $(document).ready(function() {
 		$("#divLogin").hide();
 		$("#divRegistro").show()
 	})
+	
+	$('#registroBtn').attr('disabled',true);
+	$('input').on('input',function(){
+        if($('#registroEmail').val().length !=0 && $('#registroUserName').val().length !=0 
+        	&& $('#pwd1').val().length !=0 && $('#pwd2').val().length !=0 && $('#cuenta').val().length !=0)
+            $('#registroBtn').attr('disabled', false);            
+        else
+            $('#registroBtn').attr('disabled',true);
+    }).trigger('input')
 });
+
+function validate(evt) {
+	  var theEvent = evt || window.event;
+
+	  // Handle paste
+	  if (theEvent.type === 'paste') {
+	      key = event.clipboardData.getData('text/plain');
+	  } else {
+	  // Handle key press
+	      var key = theEvent.keyCode || theEvent.which;
+	      key = String.fromCharCode(key);
+	  }
+	  var regex = /[0-9]|\./;
+	  if( !regex.test(key) ) {
+	    theEvent.returnValue = false;
+	    if(theEvent.preventDefault) theEvent.preventDefault();
+	  }
+	}
 
 function login() {
 	var info = {
@@ -107,6 +136,7 @@ function register() {
 		email : $("#registroEmail").val(),
 		pwd1 : $("#pwd1").val(),
 		pwd2 : $("#pwd2").val(),
+		cuenta: $("#cuenta").val(),
 	};
 	var data = {
 			data : JSON.stringify(info),

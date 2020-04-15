@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.http.HttpSession;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.web.socket.WebSocketSession;
 
 import edu.uclm.esi.games2020.dao.UserDAO;
@@ -59,8 +60,8 @@ public class Manager {
 		return user;
 	}
 	
-	public void register(String email, String userName, String pwd) throws Exception {
-		UserDAO.insert(email, userName, pwd);
+	public void register(String email, String userName, String pwd, String cuenta) throws Exception {
+		UserDAO.insert(email, userName, pwd, cuenta);
 	}
 	
 	public void logout(User user) {
@@ -75,7 +76,8 @@ public class Manager {
 			result.put(game.getName());
 		return result;
 	}
-
+	
+	
 	
 	public void playerReady(String idMatch, WebSocketSession session) throws Exception {
 		Match match = this.pendingMatches.get(idMatch);
@@ -98,4 +100,19 @@ public class Manager {
 		
 		return this.inPlayMatches.get(idMatch);
 	}
+
+	public JSONArray getUser(HttpSession session) {
+		Collection<User> userList = this.connectedUsersByHttpSession.values();
+		JSONArray result = new JSONArray();
+		for (User user : userList)
+			if(user.getHttpSession().getId().equals(session.getId())) {
+				System.out.println("El nombre del usuario es: "+user.getUserName());
+				result.put(user.getUserName());
+				System.out.println("La cuenta del usuario es: "+user.getCuenta());
+				result.put(user.getCuenta());
+			}
+		System.out.println(result.toString());
+		return result;
+	}
+
 }

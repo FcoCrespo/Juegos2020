@@ -17,6 +17,8 @@ public class User {
     @NoJSON
     private String email;
     @NoJSON
+    private String cuenta;
+    @NoJSON
     private WebSocketSession session;
     @NoJSON
     private IState state;
@@ -47,13 +49,24 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
+    
+    public String getCuenta() {
+        return cuenta;
+    }
+
+    public void setCuenta(String cuenta) {
+        this.cuenta = cuenta;
+    }
 
     public static User identify(String userName, String pwd) throws Exception {
         return UserDAO.identify(userName, pwd);
     }
 
     public JSONObject toJSON() {
-        return new JSONObject().put("userName", this.userName);
+    	JSONObject jsonUser = new JSONObject();
+    	jsonUser.put("userName", this.userName);
+    	jsonUser.put("cuenta", this.cuenta);
+    	return jsonUser;
     }
 
     public void setSession(WebSocketSession session) {

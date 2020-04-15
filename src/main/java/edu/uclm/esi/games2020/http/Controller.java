@@ -29,6 +29,7 @@ public class Controller {
         String pwd = jso.getString("pwd");
         User user = Manager.get().login(session, userName, pwd);
         session.setAttribute("user", user);
+        System.out.println("La sesión actual del usuario es: "+session.getId());
     }
 
     @PostMapping("/register")
@@ -38,14 +39,22 @@ public class Controller {
         String email = jso.getString("email");
         String pwd1 = jso.getString("pwd1");
         String pwd2 = jso.getString("pwd2");
+        String cuenta = jso.getString("cuenta");
         if (pwd1.equals(pwd2)) {
-            Manager.get().register(email, userName, pwd1);
+            Manager.get().register(email, userName, pwd1, cuenta);
         }
     }
 
     @GetMapping("/getGames")
     public JSONArray getGames(HttpSession session) throws Exception {
         return Manager.get().getGames();
+    }
+    
+    @GetMapping("/getUser")
+    public JSONArray getUser(HttpSession session) throws Exception {
+    	System.out.println("La sesión actual del usuario tras conectarse es: "+session.getId());
+    	JSONArray jso = Manager.get().getUser(session);
+        return jso;
     }
 
     @PostMapping(value = "/joinToMatchConMap", produces = MediaType.APPLICATION_JSON_VALUE)

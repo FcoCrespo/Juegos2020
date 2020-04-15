@@ -21,6 +21,13 @@
 </head>
 
 <body>
+
+<div class="jumbotron text-center">
+	<h2 id="nombreUsuario"></h2>
+	<h2 id="cuenta"></h2>
+	<div id="mensajeCorto"></div>	
+</div>
+
 <div class="jumbotron text-center">
 	<h2>Juegos</h2>
 	<div id="mensajeCorto"></div>	
@@ -33,6 +40,10 @@
 </div>
 
 <script>
+	$(document).ready(function() {
+		getUser();
+	});
+
 	function joinToMatch() {
 		var info = {
 			type : "JoinToMatch",
@@ -75,6 +86,19 @@
 				options = options + "<option>" + juegos[i] + "</option>";
 			}
 			selectGames.innerHTML = options;
+		});
+	}
+	
+	
+	
+	function getUser() {
+		$.get("getUser", function(datos) {
+	        var nombreUsuario =  datos[0];
+	        var cuenta =  datos[1];
+	        console.log('nombreUsuario: '+nombreUsuario);
+	        console.log('cuenta: '+cuenta);
+	        document.getElementById("nombreUsuario").textContent = 'Bienvenido ' + nombreUsuario;
+	        document.getElementById("cuenta").textContent = '(Decrypt Credit Account): ' + cuenta;
 		});
 	}
 </script>

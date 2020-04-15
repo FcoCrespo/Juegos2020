@@ -60,6 +60,9 @@
 
 <body>
 <div class="jumbotron text-center">
+	<h2 id="nombreUsuario"></h2>
+</div>
+<div class="jumbotron text-center">
 	<h2>Juegos</h2>
 	<div data-bind="html : mensaje"></div>	
 </div>
@@ -73,6 +76,20 @@
 <!-- /ko -->
 
 </div>
+
+<script>
+$(document).ready(function() {
+	getUser();
+});
+
+function getUser() {
+	$.get("getUser", function(datos) {
+        var nombreUsuario =  datos[0];
+        console.log('nombreUsuario: '+nombreUsuario);
+        document.getElementById("nombreUsuario").textContent = 'Eres el usuario ' + nombreUsuario + ' en partida.';
+	});
+}
+</script>
 
 <script src="https://knockoutjs.com/downloads/knockout-3.5.0.js"></script>
 <script src="ter.js"></script>
