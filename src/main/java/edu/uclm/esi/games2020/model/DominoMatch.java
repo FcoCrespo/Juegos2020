@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DominoMatch extends Match {
@@ -18,6 +19,7 @@ public class DominoMatch extends Match {
         this.deck = new DeckDomino();
         this.deck.suffle();
         this.tablero = new FichaDomino[5][5];
+        this.puntuaciones = new ArrayList<>();
 
         for(int pPlayer = 0; pPlayer < this.players.size()-1; pPlayer++){
             puntuaciones.set(pPlayer, 0);
