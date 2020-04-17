@@ -24,8 +24,8 @@ public class DeckDomino {
     public void suffle() {
         SecureRandom dado = new SecureRandom();
         for (int i = 0; i < 200; i++) {
-            int a = dado.nextInt(28);
-            int b = dado.nextInt(28);
+            int a = dado.nextInt(this.fichas.size());
+            int b = dado.nextInt(this.fichas.size());
             FichaDomino auxiliar = this.fichas.get(a);
             this.fichas.set(a, this.fichas.get(b));
             this.fichas.set(b, auxiliar);
