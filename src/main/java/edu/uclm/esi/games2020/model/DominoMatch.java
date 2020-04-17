@@ -19,6 +19,10 @@ public class DominoMatch extends Match {
         this.deck.suffle();
         this.tablero = new FichaDomino[5][5];
 
+        for(int pPlayer = 0; pPlayer < this.players.size()-1; pPlayer++){
+            puntuaciones.set(pPlayer, 0);
+        }
+
         for (int i = 0; i < this.tablero.length; i++)
             for (int j = 0; j < this.tablero[i].length; j++)
                 this.tablero[i][j] = null;
