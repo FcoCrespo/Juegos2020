@@ -5,35 +5,33 @@ import org.json.JSONObject;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.security.SecureRandom;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 public class DominoMatch extends Match {
 
-    private FichaDomino[][] tablero;
-    private List<Integer> puntuaciones;
+    private Deque<FichaDomino> tablero;
     private DeckDomino deck;
+    private List<FichaDomino> fichasJugadores;
 
     public DominoMatch() {
         super();
         this.deck = new DeckDomino();
         this.deck.suffle();
-        this.tablero = new FichaDomino[5][5];
-        this.puntuaciones = new ArrayList<>();
+        this.tablero = new ArrayDeque<>();
+        this.fichasJugadores = new ArrayList<>();
 
-        for(int pPlayer = 0; pPlayer < this.players.size()-1; pPlayer++){
-            puntuaciones.set(pPlayer, 0);
-        }
-
-        for (int i = 0; i < this.tablero.length; i++)
-            for (int j = 0; j < this.tablero[i].length; j++)
-                this.tablero[i][j] = null;
     }
 
 
     @Override
     protected void setState(User user) {
-
+        IState state = new DominoState();
+        user.setState(state);
+        state.setUser(user);
     }
 
     @Override
@@ -64,4 +62,63 @@ public class DominoMatch extends Match {
         }
         return true;
     }
+    
+    @Override
+    public String inicializaTurn() throws IOException {
+    	
+    	User u = getStartingPlayer(); 
+    	
+		if(u != null) {
+			this.turn = u.getSession();
+			this.notifyTurn(u.getUserName());
+			return u.getUserName();
+		}
+		else {
+			return super.inicializaTurn();		// Si ningun jugador tiene un doble, turno aleatorio 
+		}
+		
+    }
+
+
+	private User getStartingPlayer() {
+		
+		FichaDomino f = getHigherDouble(this.fichasJugadores);
+		return f.getState().getUser();
+
+	}
+
+
+	private FichaDomino getHigherDouble(List<FichaDomino> fichas) {
+		
+		int higher = 6;
+		boolean found = false;
+		FichaDomino doble = null;
+		
+		while(!found || higher==-1) {
+			
+			doble = new FichaDomino(higher,higher);
+			doble = find(doble, fichas);
+			if(doble != null)
+				found = true;
+			higher--;
+		}
+		
+		if(!found)
+			doble = null;
+		
+		return doble;
+		
+	}
+
+
+	private FichaDomino find(FichaDomino doble, List<FichaDomino> fichas) {
+		
+		for(FichaDomino ficha : fichas) {
+			if(ficha.equals(doble)) {
+				return ficha;
+			}
+		}
+		return null;
+	}
+    
 }

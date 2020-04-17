@@ -7,4 +7,10 @@ public class EscobaState implements IState {
     public void setUser(User user) {
         this.user = user;
     }
+    
+    @Override
+	public User getUser() {
+		return user;
+	}
+    
 }

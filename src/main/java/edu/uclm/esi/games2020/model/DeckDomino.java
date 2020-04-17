@@ -8,31 +8,39 @@ public class DeckDomino {
     private List<FichaDomino> fichas;
 
     public DeckDomino() {
-        this.fichas = new ArrayList<>();
-        int MaxInicial = 6;
-        int MinInicial = 0;
-        for (int i = 0; i < 6; i++) {
-            for (int j = MinInicial; j < MaxInicial; j++){
+        this.setFichas(new ArrayList<>());
+        int max = 7;
+        int min = 0;
+        for (int i = min; i < max; i++) {
+            for (int j = min; j < max; j++){
                 FichaDomino f = new FichaDomino(i, j);
-                this.fichas.add(f);
+                this.getFichas().add(f);
             }
-            MinInicial++;
-            MaxInicial--;
+            min++;
         }
     }
 
     public void suffle() {
         SecureRandom dado = new SecureRandom();
         for (int i = 0; i < 200; i++) {
-            int a = dado.nextInt(this.fichas.size());
-            int b = dado.nextInt(this.fichas.size());
-            FichaDomino auxiliar = this.fichas.get(a);
-            this.fichas.set(a, this.fichas.get(b));
-            this.fichas.set(b, auxiliar);
+            int a = dado.nextInt(this.getFichas().size());
+            int b = dado.nextInt(this.getFichas().size());
+            FichaDomino auxiliar = this.getFichas().get(a);
+            this.getFichas().set(a, this.getFichas().get(b));
+            this.getFichas().set(b, auxiliar);
         }
     }
 
-    public FichaDomino getCard() {
-        return this.fichas.remove(0);
+    public FichaDomino getFicha() {
+        return this.getFichas().remove(0);
     }
+
+	public List<FichaDomino> getFichas() {
+		return fichas;
+	}
+	
+
+	public void setFichas(List<FichaDomino> fichas) {
+		this.fichas = fichas;
+	}
 }

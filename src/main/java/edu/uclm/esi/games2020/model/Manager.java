@@ -30,10 +30,12 @@ public class Manager {
 		Game ajedrez = new Ajedrez();
 		Game ter = new TresEnRaya();
 		Game escoba = new Escoba();
+		Game  domino = new Domino();
 		
 		this.games.put(ajedrez.getName(), ajedrez);
 		this.games.put(ter.getName(), ter);
 		this.games.put(escoba.getName(), escoba);
+		this.games.put(domino.getName(), domino);
 	}
 	
 	public Match joinToMatch(User user, String gameName) {

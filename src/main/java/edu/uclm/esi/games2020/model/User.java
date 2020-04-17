@@ -92,4 +92,5 @@ public class User {
     public WebSocketSession getSession() {
         return this.session;
     }
+
 }
