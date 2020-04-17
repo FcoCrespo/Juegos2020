@@ -13,6 +13,6 @@ public class Domino extends Game {
 
         @Override
         protected Match buildMatch() {
-            return new TresEnRayaMatch();
+            return new DominoMatch();
         }
 }
