@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.web.socket.WebSocketSession;
 
 public class EscobaMatch extends Match {
     private Deck deck;
@@ -49,6 +50,11 @@ public class EscobaMatch extends Match {
         jso.put("table", jsaCartasMesa);
         jso.put("data", jsaCartasDelJugador);
         return jso;
+    }
+
+    @Override
+    public void play(JSONObject jso, WebSocketSession session) throws IOException {
+
     }
 
     @Override
