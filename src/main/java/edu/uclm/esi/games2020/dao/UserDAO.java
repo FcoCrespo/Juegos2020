@@ -64,18 +64,23 @@ public class UserDAO {
                         reqEmail = rs.getString(1);
                         System.out.println("El email del usuario que solicita nueva pass es: " +reqEmail);
                         return reqEmail;
-                    } else throw new SQLException();
+                    }
+                }
+                catch(Exception e) {
+                	return null;
                 }
             }
         }
+		return null;
     }
     
     public static void cambiarPass(String email, String pwd) throws Exception {
     	try (WrapperConnection bd = Broker.get().getBd()) {
+    		System.out.println("Llega la pass: "+pwd);
             String sql = "update user set pwd = AES_ENCRYPT(?, 'software') where email = ?";
             try (PreparedStatement ps = bd.prepareStatement(sql)) {
-                ps.setString(1, email);
-                ps.setString(2, pwd);
+                ps.setString(1, pwd);
+                ps.setString(2, email);
                 ps.executeUpdate();
             }
             String sql2 = "delete from user_token where email = ?";

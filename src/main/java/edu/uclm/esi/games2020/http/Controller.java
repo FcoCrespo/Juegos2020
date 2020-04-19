@@ -34,19 +34,31 @@ public class Controller {
         String emailReq = jso.getString("email");
         boolean result = Manager.get().emailPassReq(emailReq);
         if(result == false) {
-        	throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unexpected email");
+        	throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This email does not exist in the system.");
         }
         
     }
 	
-	@GetMapping("/user/{token}")
-    public JSONArray getToken(@PathVariable("token") String token) {
-		JSONArray jso = Manager.get().userToken(token);
-
-        if(jso == null) {
-        	throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unexpected token");
+	@PostMapping("newpassword")
+    public void getToken(HttpSession session, @RequestBody Map<String, Object> passwords) {
+		JSONObject jso = new JSONObject(passwords);
+        String newpwd1 = jso.getString("newpwd1");
+        String newpwd2 = jso.getString("newpwd2");
+        String token = jso.getString("token");
+        if (newpwd1.equals(newpwd2)) {
+            int result = Manager.get().changePass(token, newpwd1);
+            if(result == -1) {
+            	throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unexpected token");
+            }
+            if(result == -2) {
+            	throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Your token has expired. You have to request a password change again.");
+            }
         }
-        return jso;
+        else {
+        	throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The passwords are not the same");
+        }
+
+        
     }
 	
     @PostMapping("/login")

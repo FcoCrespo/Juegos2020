@@ -160,7 +160,7 @@ function register() {
 					error : function(response) {
 						var arrayResponse = Object.values(response);
 						var elems = arrayResponse[17];
-						alert(elems.message+" , " +response.statusText);
+						alert("Error : "+elems.message);
 						$("#pwd1").val('');
 						$("#pwd2").val('');
 					}
@@ -195,7 +195,9 @@ function requestToken() {
 				alert("Correo enviado!");
 			},
 			error : function(response) {
-				alert(response.message);
+				var arrayResponse = Object.values(response);
+				var elems = arrayResponse[17];
+				alert("Error : "+elems.message);
 			}
 		};
 		$.ajax(data);

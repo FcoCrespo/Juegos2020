@@ -123,19 +123,32 @@ public class Manager {
 		return result;
 	}
 
-	public JSONArray userToken(String token) {
-		JSONArray result = new JSONArray();
+	public int changePass(String token, String pass) {
+		
+		
 		try {
 			Token reqToken = TokenDAO.getToken(token);
 			
-			result.put(reqToken.getEmail());
-			result.put(reqToken.getToken());
-			result.put(reqToken.getFecha());
-			return result;
+			
+			String uuidToken = reqToken.getToken();
+			if(!uuidToken.equals(token)) {
+				return -1;
+			}
+			Long fecha = reqToken.getFecha();
+			
+			Long tenmin = fecha + 60000;
+			Long timenow = System.currentTimeMillis();
+			if(timenow>timenow){
+				TokenDAO.borrarToken(uuidToken);
+				return -2;
+			}
+			String email = reqToken.getEmail();
+			UserDAO.cambiarPass(email, pass);
+			return 1;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
+			//e.printStackTrace();
+			return -1;
 		}
 		
 	}
@@ -156,7 +169,7 @@ public class Manager {
 	                });
 	        try {
 	        	String email = UserDAO.getEmail(emailReq);
-				if(email.isEmpty() || email == null) {
+				if(email == null) {
 					return false;
 				}
 				
@@ -164,6 +177,8 @@ public class Manager {
 				///Se tendra que crear el token en la bbdd
 				
 				String uuid = UUID.randomUUID().toString();
+				
+				TokenDAO.insert(email, uuid);
 				
 	            Message message = new MimeMessage(session);
 	            message.setFrom(new InternetAddress("softwareuclm2020@gmail.com"));

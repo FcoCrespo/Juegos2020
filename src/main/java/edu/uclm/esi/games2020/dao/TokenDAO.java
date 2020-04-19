@@ -31,4 +31,29 @@ public class TokenDAO {
             }
         }
     }
+	
+	public static void insert(String email, String token) throws Exception {
+        try (WrapperConnection bd = Broker.get().getBd()) {
+        	
+        	Long fecha = System.currentTimeMillis();
+        	
+            String sql = "insert into user_token (email, token, fecha) values (?, ?, ?)";
+            try (PreparedStatement ps = bd.prepareStatement(sql)) {
+                ps.setString(1, email);
+                ps.setString(2, token);
+                ps.setLong(3, fecha);
+                ps.executeUpdate();
+            }
+        }
+    }
+	
+	public static void borrarToken(String token) throws Exception {
+    	try (WrapperConnection bd = Broker.get().getBd()) {
+            String sql2 = "delete from user_token where token = ?";
+            try (PreparedStatement ps = bd.prepareStatement(sql2)) {
+                ps.setString(1, token);
+                ps.executeUpdate();
+            }
+        }
+    }
 }
