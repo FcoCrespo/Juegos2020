@@ -16,6 +16,10 @@ public class DominoMatch extends Match {
     private Deque<FichaDomino> tablero;
     private DeckDomino deck;
     private List<FichaDomino> fichasJugadores;
+    private String[] PosicionesNext;
+    private String[] PosicionesBefore;
+    private int ActualNext;
+    private int ActualBefore;
 
     public DominoMatch() {
         super();
@@ -23,7 +27,10 @@ public class DominoMatch extends Match {
         this.deck.suffle();
         this.tablero = new ArrayDeque<>();
         this.fichasJugadores = new ArrayList<>();
-
+        this.PosicionesNext = new String[] {"22", "23", "24", "34", "33", "32", "31", "30", "40", "41", "42", "43", "44"};
+        this.PosicionesBefore = new String[] {"22", "21", "20", "10", "11", "12", "13", "14", "04", "03", "02", "01", "00"};
+        this.ActualNext = 0;
+        this.ActualBefore = 0;
     }
 
 
