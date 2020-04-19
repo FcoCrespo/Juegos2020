@@ -50,4 +50,39 @@ public class UserDAO {
             }
         }
     }
+    
+    public static String getEmail(String email) throws Exception {
+        try (WrapperConnection bd = Broker.get().getBd()) {
+            String sql = "SELECT email " + 
+            		"FROM user u " + 
+            		"WHERE email = ?";
+            try (PreparedStatement ps = bd.prepareStatement(sql)) {
+                ps.setString(1, email);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        String reqEmail;
+                        reqEmail = rs.getString(1);
+                        System.out.println("El email del usuario que solicita nueva pass es: " +reqEmail);
+                        return reqEmail;
+                    } else throw new SQLException();
+                }
+            }
+        }
+    }
+    
+    public static void cambiarPass(String email, String pwd) throws Exception {
+    	try (WrapperConnection bd = Broker.get().getBd()) {
+            String sql = "update user set pwd = AES_ENCRYPT(?, 'software') where email = ?";
+            try (PreparedStatement ps = bd.prepareStatement(sql)) {
+                ps.setString(1, email);
+                ps.setString(2, pwd);
+                ps.executeUpdate();
+            }
+            String sql2 = "delete from user_token where email = ?";
+            try (PreparedStatement ps = bd.prepareStatement(sql2)) {
+                ps.setString(1, email);
+                ps.executeUpdate();
+            }
+        }
+    }
 }

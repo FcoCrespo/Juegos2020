@@ -8,9 +8,12 @@ import javax.servlet.http.HttpSession;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,9 +22,33 @@ import org.springframework.web.server.ResponseStatusException;
 import edu.uclm.esi.games2020.model.Manager;
 import edu.uclm.esi.games2020.model.Match;
 import edu.uclm.esi.games2020.model.User;
+import edu.uclm.esi.games2020.model.Token;
 
 @RestController
 public class Controller {
+	
+	
+	@PostMapping("/email")
+    public void emailPassRequest(HttpSession session, @RequestBody Map<String, Object> email) throws Exception {
+        JSONObject jso = new JSONObject(email);
+        String emailReq = jso.getString("email");
+        boolean result = Manager.get().emailPassReq(emailReq);
+        if(result == false) {
+        	throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unexpected email");
+        }
+        
+    }
+	
+	@GetMapping("/user/{token}")
+    public JSONArray getToken(@PathVariable("token") String token) {
+		JSONArray jso = Manager.get().userToken(token);
+
+        if(jso == null) {
+        	throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unexpected token");
+        }
+        return jso;
+    }
+	
     @PostMapping("/login")
     public void login(HttpSession session, @RequestBody Map<String, Object> credenciales) throws Exception {
         JSONObject jso = new JSONObject(credenciales);
@@ -43,6 +70,9 @@ public class Controller {
         if (pwd1.equals(pwd2)) {
             Manager.get().register(email, userName, pwd1, cuenta);
         }
+        else {
+        	throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The passwords are not the same");
+        }
     }
 
     @GetMapping("/getGames")
@@ -56,6 +86,8 @@ public class Controller {
     	JSONArray jso = Manager.get().getUser(session);
         return jso;
     }
+    
+    
 
     @PostMapping(value = "/joinToMatchConMap", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> joinToMatchConMap(HttpSession session, HttpServletResponse response, @RequestBody Map<String, Object> info) {

@@ -2,6 +2,8 @@ package edu.uclm.esi.games2020.ws;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
@@ -16,6 +18,7 @@ public class SpringConfigurer implements WebSocketConfigurer {
         container.setMaxTextMessageBufferSize(2 * 1024 * 1024);
         return container;
     }
+    
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {

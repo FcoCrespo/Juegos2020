@@ -47,6 +47,8 @@
 					<input type="text" id="loginUserName" placeholder="user name"><br>
 					<input type="password" id="loginPwd" placeholder="password"><br>
 					<button onclick="login()" id="btnLogin">Login</button><br>
+					<b>Inserte su email para recuperar su password:</b><br>
+					<input type="text" id="emailPass" placeholder="email"><br>
 					<button onclick="requestToken()" id="btnRecuperarPwd">Recuperar password</button><br>
 					<a href="javascript:logout()" id="logout" style="display:none">Salir</a>
 				</div>
@@ -130,32 +132,73 @@ function login() {
 }
 
 function register() {
-	var info = {
-		type : "Register",
-		userName : $("#registroUserName").val(),
-		email : $("#registroEmail").val(),
-		pwd1 : $("#pwd1").val(),
-		pwd2 : $("#pwd2").val(),
-		cuenta: $("#cuenta").val(),
-	};
-	var data = {
-			data : JSON.stringify(info),
-			url : "register",
-			type : "post",
-			contentType: 'application/json',
-			dataType : 'json',
-			success : function() {
-				alert("OK");
-			},
-			error : function(response) {
-				alert(response.responseText);
-			}
-		};
-		$.ajax(data);
+	if(ValidateEmail($("#registroEmail").val())==true){
+			var info = {
+				type : "Register",
+				userName : $("#registroUserName").val(),
+				email : $("#registroEmail").val(),
+				pwd1 : $("#pwd1").val(),
+				pwd2 : $("#pwd2").val(),
+				cuenta: $("#cuenta").val()
+			};
+			var data = {
+					data : JSON.stringify(info),
+					url : "register",
+					type : "post",
+					contentType: 'application/json',
+					/*dataType: 'json',  -> esto provocaba errores de parseo*/
+					success : function() {
+						alert("The user has been registered correctly.");
+						$("#divRegistro").hide();
+						$("#divLogin").show();
+						$("#registroUserName").val('');
+						$("#registroEmail").val('');
+						$("#pwd1").val('');
+						$("#pwd2").val('');
+						$("#cuenta").val('');
+					},
+					error : function(response) {
+						var arrayResponse = Object.values(response);
+						var elems = arrayResponse[17];
+						alert(elems.message+" , " +response.statusText);
+						$("#pwd1").val('');
+						$("#pwd2").val('');
+					}
+			};
+			$.ajax(data);
+	}
+	
+}
+
+function ValidateEmail(mail) 
+{
+  if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail))
+  {
+    return (true);
+  }
+  alert("Warning: You have entered an invalid email address!");
+  return (false);
 }
 
 function requestToken() {
-	alert("En requestToken");
+	var info = {
+			type : "Email",
+			email : $("#emailPass").val()
+		};
+		
+		var data = {
+			data : JSON.stringify(info),
+			url : "email",
+			type : "post",
+			contentType: 'application/json',
+			success : function() {
+				alert("Correo enviado!");
+			},
+			error : function(response) {
+				alert(response.message);
+			}
+		};
+		$.ajax(data);
 }
 
 function logout() {

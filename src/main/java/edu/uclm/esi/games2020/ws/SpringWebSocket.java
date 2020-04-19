@@ -28,7 +28,7 @@ public class SpringWebSocket extends TextWebSocketHandler {
                 break;
             }
     }
-
+    
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
         System.out.println("La sesión " + session.getId() + " dice " + message.getPayload());
@@ -44,4 +44,5 @@ public class SpringWebSocket extends TextWebSocketHandler {
         }
 
     }
+  
 }

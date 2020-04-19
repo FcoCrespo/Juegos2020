@@ -40,6 +40,7 @@
 </div>
 
 <script>
+	
 	$(document).ready(function() {
 		getUser();
 	});
@@ -71,7 +72,9 @@
 				}
 			},
 			error : function(response) {
-				alert(response.message);
+				var arrayResponse = Object.values(response);
+				var elems = arrayResponse[17];
+				alert("Error : "+elems.message);
 			}
 		};
 		$.ajax(data);
