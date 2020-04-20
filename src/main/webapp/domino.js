@@ -8,6 +8,7 @@ function ViewModel() {
     var started = JSON.parse(sessionStorage.started);
     self.mensaje = ko.observable("Esperando oponente para la partida " + idMatch);
     self.tablero = ko.observableArray([ko.observableArray([])]);
+    self.fichas = ko.observableArray([]);
     self.contAfter = 22;
     self.contBefore = 22;
   
@@ -15,7 +16,6 @@ function ViewModel() {
     var finished = false;
 
     buildTablero();
-
 
     self.doPlay = function(posicion, fichaN1, fichaN2, $data, event){
 
@@ -64,6 +64,9 @@ function ViewModel() {
         if (data.type == "matchStarted") {
 
             self.mensaje("La partida ha empezado");
+            var fichas = data.startData.data;
+            for (var i = 0; i < fichas.length; i++)
+                self.fichas.push(fichas[i]);
         }
 
         if(data.type == "matchChangeTurn") {

@@ -7,9 +7,9 @@
 
 		.container{
 			width: 300px;
-			max-width: 390px;
+			max-width: 350px;
 			overflow: hidden;
-			margin: 50px auto 0 auto;
+			margin: 10px auto 0 auto;
 		}
 
 		.container span{width: 100%;
@@ -22,8 +22,8 @@
 		}
 
 		.container .box{float: left;
-			width: 70px;
-			height: 70px;
+			width: 60px;
+			height: 60px;
 			border: 1px solid #000;
 			transition: all .25s ease-in-out;
 			font-family: sans-serif;
@@ -44,6 +44,10 @@
 			margin: 10px auto}
 
 		.win{background: #F9690E; color: #fff}
+
+		select{
+			position: center;
+		}
 
 	</style>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
@@ -69,9 +73,16 @@
 		<div class="box" data-bind="attr : {id : 'box' + $parentContext.$index() + $index()}, event : { click: $root.doPlay.bind($data, $parentContext.$index(), $index()) } "></div>
 	<!-- /ko -->
 <!-- /ko -->
-
 </div>
 
+<div class="container">Mis Fichas
+	<select name="fichasJugador", id="fichasJugador">
+		<!-- ko foreach : { data: fichas, as: 'ficha'} -->
+			<option data-bind="value : number1 + ' | ' + number2, text : number1 + ' | ' + number2"></option>
+		<!-- /ko -->
+	</select>
+</div>
+<p></p>
 <script>
 $(document).ready(function() {
 	getUser();

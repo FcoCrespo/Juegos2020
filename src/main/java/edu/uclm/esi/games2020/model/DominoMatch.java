@@ -42,10 +42,31 @@ public class DominoMatch extends Match {
 
     @Override
     protected JSONObject startData(User player) {
+        FichaDomino ficha1 = this.deck.getFicha();
+        FichaDomino ficha2 = this.deck.getFicha();
+        FichaDomino ficha3 = this.deck.getFicha();
+        FichaDomino ficha4 = this.deck.getFicha();
+        FichaDomino ficha5 = this.deck.getFicha();
+        FichaDomino ficha6 = this.deck.getFicha();
+        FichaDomino ficha7 = this.deck.getFicha();
+        ficha1.setState(player.getState());
+        ficha2.setState(player.getState());
+        ficha3.setState(player.getState());
+        ficha4.setState(player.getState());
+        ficha5.setState(player.getState());
+        ficha6.setState(player.getState());
+        ficha7.setState(player.getState());
+        JSONArray jsaFichasJugador = new JSONArray();
+        jsaFichasJugador.put(ficha1.toJSON());
+        jsaFichasJugador.put(ficha2.toJSON());
+        jsaFichasJugador.put(ficha3.toJSON());
+        jsaFichasJugador.put(ficha4.toJSON());
+        jsaFichasJugador.put(ficha5.toJSON());
+        jsaFichasJugador.put(ficha6.toJSON());
+        jsaFichasJugador.put(ficha7.toJSON());
+
         JSONObject jso = new JSONObject();
-        JSONArray jsaTablero = new JSONArray();
-        jsaTablero.put(this.tablero);
-        jso.put("table", jsaTablero);
+        jso.put("data", jsaFichasJugador);
         return jso;
     }
 
