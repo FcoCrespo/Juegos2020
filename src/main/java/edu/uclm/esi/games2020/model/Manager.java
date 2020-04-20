@@ -30,7 +30,7 @@ public class Manager {
 		Game ajedrez = new Ajedrez();
 		Game ter = new TresEnRaya();
 		Game escoba = new Escoba();
-		Game  domino = new Domino();
+		Game domino = new Domino();
 		
 		this.games.put(ajedrez.getName(), ajedrez);
 		this.games.put(ter.getName(), ter);

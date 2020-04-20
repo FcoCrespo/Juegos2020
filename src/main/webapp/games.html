@@ -25,7 +25,6 @@
 <div class="jumbotron text-center">
 	<h2 id="nombreUsuario"></h2>
 	<h2 id="cuenta"></h2>
-	<div id="mensajeCorto"></div>	
 </div>
 
 <div class="jumbotron text-center">
@@ -62,11 +61,18 @@
 					sessionStorage.idMatch = match.idMatch;
 					sessionStorage.started = match.started;
 					sessionStorage.game = info.game;
-					if (sessionStorage.game = "Escoba"){
+
+
+					if (sessionStorage.game == "Escoba"){
 						window.location.href="escoba.html"
 					}
-					if (sessionStorage.game = "Tres En Raya"){
+
+					if (sessionStorage.game == "Tres En Raya"){
 						window.location.href="ter.html"
+					}
+
+					if (sessionStorage.game == "Domino"){
+						window.location.href="domino.html"
 					}
 				}
 			},

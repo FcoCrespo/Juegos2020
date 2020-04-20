@@ -8,7 +8,7 @@ public class TresEnRaya extends Game {
 
     @Override
     public String getName() {
-        return "Tres en raya";
+        return "Tres En Raya";
     }
 
     @Override
