@@ -83,7 +83,7 @@ public class DominoMatch extends Match {
         return true;
     }
     
-    @Override
+    /*@Override
     public String inicializaTurn() throws IOException {
     	
     	User u = getStartingPlayer(); 
@@ -128,7 +128,7 @@ public class DominoMatch extends Match {
 		
 		return doble;
 		
-	}
+	}*/
 
 
 	private FichaDomino find(FichaDomino doble, List<FichaDomino> fichas) {

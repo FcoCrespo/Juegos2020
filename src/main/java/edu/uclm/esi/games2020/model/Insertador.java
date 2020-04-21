@@ -1,6 +1,8 @@
 package edu.uclm.esi.games2020.model;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+
 
 public class Insertador {
 
@@ -16,11 +18,7 @@ public class Insertador {
     }
 
     public static void main(String[] args) {
-        User user = new User();
-        user.setUserName("pepe");
-        user.setEmail("pepe@pepe.com");
-
-        String sql = Insertador.insert(user);
+        //para pruebas
     }
 
 }
