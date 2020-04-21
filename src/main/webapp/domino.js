@@ -29,6 +29,7 @@ function ViewModel() {
         var fichaN1 = getFichaSelected()[0]
         var fichaN2 = getFichaSelected()[1]
 
+
         if(fichaN1 === "" || fichaN2 === ""){
             alert("Accion no permitida "+fichaN1 + " " + fichaN2)
         }else{
