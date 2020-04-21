@@ -1,6 +1,13 @@
 var url = "ws://localhost:8600/juegos";
 var ws = new WebSocket(url);
 
+function getFichaSelected(){
+    var e = document.getElementById("fichas").value;
+    var fichaN1 = e.substring(0, 1)
+    var fichaN2 = e.substring(4, 5)
+    return [fichaN1, fichaN2]
+}
+
 function ViewModel() {
     var self = this;
     self.usuarios = {};
@@ -17,20 +24,25 @@ function ViewModel() {
 
     buildTablero();
 
-    self.doPlay = function(posicion, fichaN1, fichaN2, $data, event){
+    self.doPlay = function(posicion, $data, event){
 
-        var msg = {
-            type: "doPlayDO",
-            idMatch: sessionStorage.idMatch,
-            posicion: posicion, // 0 -> delante, 1 -> atras
-            number_1: fichaN1,
-            number_2: fichaN2
-        };
-        
-        if(!finished){
-        	ws.send(JSON.stringify(msg));
+        var fichaN1 = getFichaSelected()[0]
+        var fichaN2 = getFichaSelected()[1]
+
+        if(fichaN1 === "" || fichaN2 === ""){
+            alert("Accion no permitida "+fichaN1 + " " + fichaN2)
+        }else{
+            var msg = {
+                type: "doPlayDO",
+                idMatch: sessionStorage.idMatch,
+                posicion: posicion, // true -> izquierda, false -> derecha
+                number_1: fichaN1,
+                number_2: fichaN2
+            };
+            if(!finished){
+                ws.send(JSON.stringify(msg));
+            }
         }
-
     }
 
 
@@ -84,9 +96,24 @@ function ViewModel() {
         }
 
         if(data.type == "matchPlay"){
-            document.getElementById("box" + (parseInt(data.play_x)+1) + data.play_y).innerHTML = self.usuarios[data.playName];
-        }
 
+            if (data.posicion) {
+                var posicionString = self.contBefore.toString()
+                var fila = posicionString.substring(0, 1)
+                self.contBefore++
+            }else{
+                var posicionString = self.contAfter.toString()
+                var fila = posicionString.substring(0, 1)
+                self.contAfter++
+            }
+
+            if (!(parseInt(fila)%2)) {
+                var aux = data.fichaN1
+                data.fichaN1 = data.fichaN2
+                data.fichaN2 = aux
+            }
+            document.getElementById("box" + posicionString).innerHTML = data.fichaN1 + ' | ' + data.fichaN2
+        }
     }
 }
 

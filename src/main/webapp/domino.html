@@ -32,16 +32,23 @@
 			line-height: 100px;
 		}
 
-		button{background: #26C281;
-			color: #fff;
-			font-weight: bold;
-			border: 1px solid yellow;
-			cursor: pointer;
-			width: 200px;
-			height: 40px;
-			font-size: 22px;
-			display: block;
-			margin: 10px auto}
+		button {
+			display: inline-block;
+		}
+
+		.FichasJugador{
+			margin: 4px auto 0 auto;
+			max-width: 20%;
+		}
+
+		.FichasJugador .ControlBotones{
+			display: inline-block;
+		}
+
+		.ControlBotones{
+			margin: 4px auto 0 auto;
+			max-width: 30%;
+		}
 
 		.win{background: #F9690E; color: #fff}
 
@@ -70,19 +77,23 @@
 
 <!-- ko foreach : { data: tablero, as: 'row' }  -->
 	<!-- ko foreach : { data : row, as: 'cell' } -->
-		<div class="box" data-bind="attr : {id : 'box' + $parentContext.$index() + $index()}, event : { click: $root.doPlay.bind($data, $parentContext.$index(), $index()) } "></div>
+		<div class="box" data-bind="attr : {id : 'box' + $parentContext.$index() + $index()}"></div>
 	<!-- /ko -->
 <!-- /ko -->
 </div>
 
-<div class="container">Mis Fichas
-	<select name="fichasJugador", id="fichasJugador">
+<div class="FichasJugador">Mis Fichas
+	<select name="fichas", id="fichas">
 		<!-- ko foreach : { data: fichas, as: 'ficha'} -->
 			<option data-bind="value : number1 + ' | ' + number2, text : number1 + ' | ' + number2"></option>
 		<!-- /ko -->
 	</select>
 </div>
-<p></p>
+
+<div class="ControlBotones">
+	<button data-bind="click: doPlay.bind($data, true)">Añadir a la izquierda</button>
+	<button data-bind="click: doPlay.bind($data, false)">Añadir a la derecha</button>
+</div>
 <script>
 $(document).ready(function() {
 	getUser();
