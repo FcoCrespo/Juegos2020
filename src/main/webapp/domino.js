@@ -9,8 +9,8 @@ function ViewModel() {
     self.mensaje = ko.observable("Esperando oponente para la partida " + idMatch);
     self.tablero = ko.observableArray([ko.observableArray([])]);
     self.fichas = ko.observableArray([]);
-    self.contAfter = 22;
-    self.contBefore = 22;
+    self.contAfter = 35; // Centro
+    self.contBefore = 35;
   
     
     var finished = false;
@@ -35,13 +35,14 @@ function ViewModel() {
 
 
     function buildTablero() {
-        var n = 5;
+        var n1 = 5;
+        var n2 = 11;
 
-        for(var i = 0; i<n; i++){
+        for(var i = 0; i<n1; i++){
 
             var row =  ko.observableArray([]);
 
-            for(var j = 0; j<n; j++){
+            for(var j = 0; j<n2; j++){
                 row.push("");
             }
 
