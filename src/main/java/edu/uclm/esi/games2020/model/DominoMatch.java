@@ -223,7 +223,7 @@ public class DominoMatch extends Match {
         if (manoSinFichas(session)==false) {
             return id;
         }
-        else if(this.deck.getFichas().size()==0) {
+        else if(this.deck.getFichas().size()==0 && this.tablero.size()>0) {
         	boolean continuar = posibleColocacion();
     		if(continuar==false) {
     			int mismasFichas = contarFichasJugadores(session, id);
@@ -291,7 +291,7 @@ public class DominoMatch extends Match {
     		if(fichaIzq.getNumber1()==this.fichasJugadores.get(i).getNumber1() || fichaIzq.getNumber2()==this.fichasJugadores.get(i).getNumber2()) {
     			continuar=true;
     		}
-    		else if(fichaDer.getNumber2()==this.fichasJugadores.get(i).getNumber1() || fichaDer.getNumber2()==this.fichasJugadores.get(i).getNumber2()) {
+    		else if(fichaDer.getNumber1()==this.fichasJugadores.get(i).getNumber1() || fichaDer.getNumber2()==this.fichasJugadores.get(i).getNumber2()) {
     			continuar=true;
     		}
     		
