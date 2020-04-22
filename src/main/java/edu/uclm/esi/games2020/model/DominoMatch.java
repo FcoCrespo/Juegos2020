@@ -193,7 +193,7 @@ public class DominoMatch extends Match {
     		if(fichaIzq.getNumber1()==this.fichasJugadores.get(i).getNumber1() || fichaIzq.getNumber2()==this.fichasJugadores.get(i).getNumber2()) {
     			continuar=true;
     		}
-    		if(fichaDer.getNumber2()==this.fichasJugadores.get(i).getNumber1() || fichaDer.getNumber2()==this.fichasJugadores.get(i).getNumber2()) {
+    		else if(fichaDer.getNumber2()==this.fichasJugadores.get(i).getNumber1() || fichaDer.getNumber2()==this.fichasJugadores.get(i).getNumber2()) {
     			continuar=true;
     		}
     		
@@ -248,6 +248,12 @@ public class DominoMatch extends Match {
         
         boolean colocacionCorrecta = true;
         if(tablero.size()!=0) {
+        	System.out.println("El estado del tablero de tamaño " +this.tablero.size()+ "es antes de colocar: ");
+        	int i = 0;
+        	for (FichaDomino elem : this.tablero) {
+        	    System.out.print("["+elem.getNumber1()+" | "+elem.getNumber2()+"] ");
+        	}
+        	System.out.println("");
         	colocacionCorrecta = false;
     		if(posicionTablero == true) {
     			FichaDomino fichaIzq = tablero.peek();
@@ -262,7 +268,7 @@ public class DominoMatch extends Match {
     				tablero.addFirst(this.fichaColocada);
     				colocacionCorrecta = true;
     			}
-    			if(fichaIzq.getNumber1()==this.fichaColocada.getNumber2()) {
+    			else if(fichaIzq.getNumber1()==this.fichaColocada.getNumber2()) {
     				System.out.println("Entro en correcta izq sin rotar"); 
     				System.out.println("El jugador ha colocado la ficha: "+this.fichaColocada.getNumber1()+" | "+this.fichaColocada.getNumber2());
 
@@ -271,7 +277,7 @@ public class DominoMatch extends Match {
     			}
     		}
     		else {
-    			FichaDomino fichaDer = tablero.poll();
+    			FichaDomino fichaDer = tablero.peekLast();
     			System.out.println("La ficha del tablero a la derecha es: "+fichaDer.getNumber1()+" | "+fichaDer.getNumber2());
     			if(fichaDer.getNumber2()==this.fichaColocada.getNumber1()) {
     				System.out.println("Entro en correcta derecha sin rotar");
@@ -280,7 +286,7 @@ public class DominoMatch extends Match {
     				colocacionCorrecta = true;
     				tablero.addLast(this.fichaColocada);
     			}
-    			if(fichaDer.getNumber2()==this.fichaColocada.getNumber2()) {
+    			else if(fichaDer.getNumber2()==this.fichaColocada.getNumber2()) {
     				
     				System.out.println("Entro en correcta derecha rotando");
     				System.out.println("El jugador ha colocado la ficha: "+this.fichaColocada.getNumber1()+" | "+this.fichaColocada.getNumber2());
@@ -296,7 +302,7 @@ public class DominoMatch extends Match {
         }
         else {
         	System.out.println("El tablero esta vacío y coloca ficha: "+this.fichaColocada.getNumber1()+" | "+this.fichaColocada.getNumber2());
-        	tablero.add(this.fichaColocada);
+        	tablero.addFirst(this.fichaColocada);
         }
         
         if(colocacionCorrecta==false) {

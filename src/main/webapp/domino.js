@@ -1,5 +1,6 @@
 var url = "ws://localhost:8600/juegos";
 var ws = new WebSocket(url);
+var MiUsuario = ""
 
 function getFichaSelected(){
     var e = document.getElementById("fichas").value;
@@ -8,12 +9,10 @@ function getFichaSelected(){
     return [fichaN1, fichaN2]
 }
 
-function deleteFichaPuesta(ficha){
+function deleteFichaPuesta(){
     var ops = document.getElementById("fichas");
-    for(var i = 0; i < ops.length; i++){
-        if(ops.options[i].value == ficha){
-            ops.remove(i);
-        }
+    if(ops.selectedIndex != -1){
+        ops.remove(ops.selectedIndex)
     }
 }
 
@@ -93,10 +92,12 @@ function ViewModel() {
         }
 
         if(data.type == "matchChangeTurn") {
+            turno = data.turn;
             self.mensaje("Turno de " + data.turn);
         }
 
         if(data.type == "matchIlegalPlay"){
+            jugadaHecha = false
             alert(data.result);
         }
 
@@ -110,10 +111,16 @@ function ViewModel() {
             if (data.posicion) {
                 var posicionString = self.contBefore.toString()
                 var fila = posicionString.substring(0, 1)
+                if(self.contBefore == 35){
+                    self.contAfter++
+                }
                 self.contBefore--
             }else{
                 var posicionString = self.contAfter.toString()
                 var fila = posicionString.substring(0, 1)
+                if(self.contAfter == 35){
+                    self.contBefore--
+                }
                 self.contAfter++
             }
 
@@ -123,7 +130,9 @@ function ViewModel() {
                 data.fichaN2 = aux
             }
             document.getElementById("box" + posicionString).innerHTML = data.fichaN1 + ' | ' + data.fichaN2
-            deleteFichaPuesta(document.getElementById("box" + posicionString).innerHTML)
+            if (data.playName == MiUsuario){
+                deleteFichaPuesta();
+            }
         }
     }
 }

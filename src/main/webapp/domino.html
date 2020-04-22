@@ -102,6 +102,7 @@ $(document).ready(function() {
 function getUser() {
 	$.get("getUser", function(datos) {
         var nombreUsuario =  datos[0];
+        MiUsuario = datos[0];
         console.log('nombreUsuario: '+nombreUsuario);
         document.getElementById("nombreUsuario").textContent = 'Eres el usuario ' + nombreUsuario + ' en partida.';
 	});
