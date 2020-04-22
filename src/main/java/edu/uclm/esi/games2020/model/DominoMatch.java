@@ -16,6 +16,8 @@ public class DominoMatch extends Match {
     private Deque<FichaDomino> tablero;
     private DeckDomino deck;
     private List<FichaDomino> fichasJugadores;
+    private FichaDomino fichaColocada;
+    
 
     public DominoMatch() {
         super();
@@ -23,6 +25,7 @@ public class DominoMatch extends Match {
         this.deck.suffle();
         this.tablero = new ArrayDeque<>();
         this.fichasJugadores = new ArrayList<>();
+        this.fichaColocada = new FichaDomino(7,7);
     }
 
 
@@ -62,54 +65,185 @@ public class DominoMatch extends Match {
         return jso;
     }
 
+    public FichaDomino obtenerFichaJugador(int number_1, int number_2) {
+    	
+    	for(int i=0; i<this.fichasJugadores.size(); i++) {
+    		if(fichasJugadores.get(i).getNumber1()==number_1 && fichasJugadores.get(i).getNumber2()==number_2 ) {
+    			return fichasJugadores.get(i);
+    		}
+    	}
+    	
+    	return null;
+    }
+    
     @Override
 	public void play(JSONObject jso, WebSocketSession session) throws IOException {
-	
+    		
+	    	 
 			int number_1 = jso.getInt("number_1");
 			int number_2 = jso.getInt("number_2");
-			
-			FichaDomino fichaPuesta = new FichaDomino(number_1,number_2);
-			
 			boolean posicionTablero = jso.getBoolean("posicion");
 			
-			/*if(this.verifyPlay(session, fichaPuesta, posicionTablero)) {
+			//this.fichaColocada = new FichaDomino(number_1,number_2);
+			
+			if (session == this.turn) {
+				this.fichaColocada = obtenerFichaJugador(number_1,number_2);
+				
+				System.out.println("El jugador "+this.getNamePlayerSession(session));
+				System.out.println("Ficha colocada: "+this.fichaColocada.getNumber1() + " | "+this.fichaColocada.getNumber2());
+				
+				System.out.println("La ficha pertenece al jugador con la sesion: "+this.fichaColocada.getState().getUser().getSession().getId());
+				System.out.println("La sesion del jugador es: "+session.getId());
+				
+				if(this.verifyPlay(session, number_1, number_2, posicionTablero)) {
+					quitarFichaMano();
+					this.notifyPlay(session, posicionTablero);
 
-				this.notifyPlay(session, x, y);
+					int w = this.winner(session, doPlay(session));
 
-				int w = this.winner(x, y, this.doPlay(session, x, y));
-
-				if(w == -1) {
-					this.notifyTurn(this.rotateTurn(session));
-				}else if(w == -2){
-					String result = "La partida ha finalizado en empate";
-					this.notifyFinish(result);
+					if(w == -1) {
+						this.notifyTurn(this.rotateTurn(session));
+					}else if(w == -2){
+						String result = "La partida ha finalizado en empate";
+						this.notifyFinish(result);
+					}else {
+						String result = this.players.get(w).getUserName() + " ha ganado la partida";
+						this.notifyFinish(result);
+					}
 				}else {
-					String result = this.players.get(w).getUserName() + " ha ganado la partida";
-					this.notifyFinish(result);
+					this.notifyInvalidPlay(session);
 				}
-			}else {
+	        }
+			else {
 				this.notifyInvalidPlay(session);
-			}*/
+			}
 		
 		
 	}
+    
+    public int winner(WebSocketSession session, int id) {
+        if (manoSinFichas(session)==false) {
+            return id;
+        }
+        else if(this.deck.getFichas().isEmpty()) {
+        	boolean continuar = posibleColocacion();
+    		if(continuar==false) {
+    			int mismasFichas = contarFichasJugadores(session, id);
+    			return mismasFichas;
+    		}
+    		else {
+    			return -1;
+    		}
+        }
+        else {
+        	return -1;
+        }
+    }
+    
+    public int contarFichasJugadores(WebSocketSession session, int id) {
+    	int fichasJugadorActual = 0;
+    	int fichasOtroJugador = 0;
+    	int idJugador = 0;
+    	for(int i=0; i<this.fichasJugadores.size(); i++) {
+    		if(this.fichasJugadores.get(i).getState().getUser().getSession().getId().equals(session.getId())) {
+    			fichasJugadorActual ++;
+    		}
+    		else {
+    			fichasOtroJugador ++;
+    		}
+    	}
+    	
+    	if(fichasJugadorActual>fichasOtroJugador) {
+    		return id;
+    	}
+    	else if(fichasJugadorActual<fichasOtroJugador){
+    		return this.getIdOtherPlayer(session);
+    	}
+    	
+    	return -2;
+    	
+    }
+    
+    public boolean manoSinFichas(WebSocketSession session) {
+    	boolean tieneFichas = false;
+    	for(int i=0; i<this.fichasJugadores.size()&&tieneFichas==false; i++) {
+    		if(this.fichasJugadores.get(i).getState().getUser().getSession().getId().equals(session.getId())) {
+    			tieneFichas=true;
+    		}
+    	}
+    	return tieneFichas;
+    	
+    }
+    
+    
+    public int doPlay(WebSocketSession session) {
 
-    public boolean verifyPlay(WebSocketSession session, FichaDomino fichaPuesta, boolean posicionTablero) {
+        int i = this.getPosOfSession(session);
+
+        return i;
+
+    }
+    
+    
+    public boolean posibleColocacion() {
+    	boolean continuar = false;
+    	FichaDomino fichaIzq = this.tablero.peek();
+    	FichaDomino fichaDer = this.tablero.poll();
+    	for(int i=0; i<this.fichasJugadores.size()&&continuar==false; i++) {
+    		if(fichaIzq.getNumber1()==this.fichasJugadores.get(i).getNumber1() || fichaIzq.getNumber2()==this.fichasJugadores.get(i).getNumber2()) {
+    			continuar=true;
+    		}
+    		if(fichaIzq.getNumber2()==this.fichasJugadores.get(i).getNumber1() || fichaIzq.getNumber1()==this.fichasJugadores.get(i).getNumber2()) {
+    			continuar=true;
+    		}
+    		if(fichaIzq.getNumber1()==this.fichasJugadores.get(i).getNumber1() || fichaIzq.getNumber2()==this.fichasJugadores.get(i).getNumber2()) {
+    			continuar=true;
+    		}
+    		if(fichaIzq.getNumber2()==this.fichasJugadores.get(i).getNumber1() || fichaIzq.getNumber1()==this.fichasJugadores.get(i).getNumber2()) {
+    			continuar=true;
+    		}
+    	}
+    	return continuar;
+    	
+    }
+    
+    
+    
+    
+    
+    public void notifyPlay(WebSocketSession session, boolean posicionTablero) throws IOException {
+        int pos = this.getPosOfSession(session);
+        if(pos>=0) {
+            JSONObject jso = this.toJSON();
+            jso.put("type", "matchPlay");
+            String name = players.get(pos).getUserName();
+            jso.put("playName", name);
+            jso.put("fichaN1", this.fichaColocada.getNumber1());
+            jso.put("fichaN2", this.fichaColocada.getNumber2());
+            jso.put("posicion", posicionTablero);
+            for (User player : this.players) {
+                player.send(jso);
+            }
+        }
+
+    }
+
+    public boolean verifyPlay(WebSocketSession session, int number_1, int number_2, boolean posicionTablero) {
 
         if (session != this.turn) {
             return false;
         }
         
-        if(!fichaPuesta.getState().getUser().getSession().equals(session.getId())) {
+        if(!this.fichaColocada.getState().getUser().getSession().getId().equals(session.getId())) {
         	return false;
         }
         
         boolean existeFicha = false;
-        for(int i=0; i < this.fichasJugadores.size(); i++) {
-        	if(this.fichasJugadores.get(i).getNumber1()==fichaPuesta.getNumber1() && this.fichasJugadores.get(i).getNumber2()==fichaPuesta.getNumber2()) {
+        for(int i=0; i < this.fichasJugadores.size()&&existeFicha==false; i++) {
+        	if(this.fichasJugadores.get(i).getNumber1()==this.fichaColocada.getNumber1() && this.fichasJugadores.get(i).getNumber2()==this.fichaColocada.getNumber2()) {
         		existeFicha = true;
         	}
-        	if(this.fichasJugadores.get(i).getNumber1()==fichaPuesta.getNumber2() && this.fichasJugadores.get(i).getNumber2()==fichaPuesta.getNumber1()) {
+        	if(this.fichasJugadores.get(i).getNumber1()==this.fichaColocada.getNumber2() && this.fichasJugadores.get(i).getNumber2()==this.fichaColocada.getNumber1()) {
         		existeFicha = true;
         	}
         }
@@ -117,19 +251,52 @@ public class DominoMatch extends Match {
         	return false;
         }
         
-        boolean colocacionCorrecta = false;
+        boolean colocacionCorrecta = true;
         if(!tablero.isEmpty()) {
-        	if(tablero.size()>2) {
-        		if(posicionTablero == true) {
-        			FichaDomino fichaIzq = tablero.peek();
-        			if(fichaIzq.getNumber1()==fichaPuesta.getNumber1() || fichaIzq.getNumber1()==fichaPuesta.getNumber2()) {
-        				colocacionCorrecta = true;
-        			}
-        			if(fichaIzq.getNumber2()==fichaPuesta.getNumber1() || fichaIzq.getNumber2()==fichaPuesta.getNumber2()) {
-        				colocacionCorrecta = true;
-        			}
-        		}
-        	}
+        	colocacionCorrecta = false;
+    		if(posicionTablero == true) {
+    			FichaDomino fichaIzq = tablero.peek();
+    			System.out.println("La ficha de la derecha es: "+fichaIzq.getNumber1()+" | "+fichaIzq.getNumber2());
+    			if(fichaIzq.getNumber1()==this.fichaColocada.getNumber1() || fichaIzq.getNumber2()==this.fichaColocada.getNumber2()) {
+    				System.out.println("Entro en correcta 1");
+    				
+    				colocacionCorrecta = true;
+    				tablero.addFirst(this.fichaColocada);
+    			}
+    			if(fichaIzq.getNumber2()==this.fichaColocada.getNumber1() || fichaIzq.getNumber1()==this.fichaColocada.getNumber2()) {
+    				System.out.println("Entro en correcta 2"); 
+    				
+    				this.fichaColocada.setNumber1(number_2);
+    				this.fichaColocada.setNumber2(number_1);
+    				
+    				tablero.addFirst(this.fichaColocada);
+    				colocacionCorrecta = true;
+    			}
+    		}
+    		else {
+    			FichaDomino fichaDer = tablero.poll();
+    			System.out.println("La ficha de la derecha es: "+fichaDer.getNumber1()+" | "+fichaDer.getNumber2());
+    			if(fichaDer.getNumber1()==this.fichaColocada.getNumber1() || fichaDer.getNumber2()==this.fichaColocada.getNumber2()) {
+    				System.out.println("Entro en correcta 3");
+    				
+    				colocacionCorrecta = true;
+    				tablero.addLast(this.fichaColocada);
+    			}
+    			if(fichaDer.getNumber2()==this.fichaColocada.getNumber1() || fichaDer.getNumber1()==this.fichaColocada.getNumber2()) {
+    				
+    				System.out.println("Entro en correcta 4");
+    				
+    				this.fichaColocada.setNumber1(number_2);
+    				this.fichaColocada.setNumber2(number_1);
+    				
+    				tablero.addLast(this.fichaColocada);
+    				colocacionCorrecta = true;
+    			}
+    		}
+        	
+        }
+        else {
+        	tablero.add(this.fichaColocada);
         }
         
         if(colocacionCorrecta==false) {
@@ -139,62 +306,20 @@ public class DominoMatch extends Match {
         return true;
     }
     
-    /*@Override
-    public String inicializaTurn() throws IOException {
-    	
-    	User u = getStartingPlayer(); 
-    	
-		if(u != null) {
-			this.turn = u.getSession();
-			this.notifyTurn(u.getUserName());
-			return u.getUserName();
-		}
-		else {
-			return super.inicializaTurn();		// Si ningun jugador tiene un doble, turno aleatorio 
-		}
-		
-    }
-
-
-	private User getStartingPlayer() {
-		
-		FichaDomino f = getHigherDouble(this.fichasJugadores);
-		return f.getState().getUser();
-
-	}
-
-
-	private FichaDomino getHigherDouble(List<FichaDomino> fichas) {
-		
-		int higher = 6;
-		boolean found = false;
-		FichaDomino doble = null;
-		
-		while(!found || higher==-1) {
-			
-			doble = new FichaDomino(higher,higher);
-			doble = find(doble, fichas);
-			if(doble != null)
-				found = true;
-			higher--;
-		}
-		
-		if(!found)
-			doble = null;
-		
-		return doble;
-		
-	}*/
-
-
-	private FichaDomino find(FichaDomino doble, List<FichaDomino> fichas) {
-		
-		for(FichaDomino ficha : fichas) {
-			if(ficha.equals(doble)) {
-				return ficha;
+    public void quitarFichaMano() {
+    	boolean seguir = true;
+    	for(int i=0; i<this.fichasJugadores.size()&&seguir==true; i++) {
+			if(this.fichasJugadores.get(i).getNumber1()==this.fichaColocada.getNumber1()&&this.fichasJugadores.get(i).getNumber2()==this.fichaColocada.getNumber2()) {
+				this.fichasJugadores.remove(i);
+				seguir=false;
+			}
+			if(this.fichasJugadores.get(i).getNumber1()==this.fichaColocada.getNumber2()&&this.fichasJugadores.get(i).getNumber2()==this.fichaColocada.getNumber1()) {
+				this.fichasJugadores.remove(i);
+				seguir=false;
 			}
 		}
-		return null;
-	}
+    }
+    
+   
     
 }

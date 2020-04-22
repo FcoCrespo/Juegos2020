@@ -30,6 +30,27 @@ public abstract class Match {
         }
         return pos;
     }
+    
+    protected String getNamePlayerSession(WebSocketSession session) {
+        String name = null;
+        for (User u : this.players) {
+            if (u.getSession() == session) {
+                name = players.get(players.indexOf(u)).getUserName();
+            }
+        }
+        return name;
+    }
+    
+    protected int getIdOtherPlayer(WebSocketSession session) {
+        int pos = -1;
+        for (User u : this.players) {
+            if (!u.getSession().equals(session)) {
+                pos = players.indexOf(u);
+            }
+        }
+        return pos;
+    }
+    
 
     public Match() {
         this.id = UUID.randomUUID().toString();
@@ -148,4 +169,6 @@ public abstract class Match {
     }
 
 	abstract public void play(JSONObject jso, WebSocketSession session) throws IOException;
+	//abstract public void robar(JSONObject jso, WebSocketSession session) throws IOException;
+	//abstract public void pasar(JSONObject jso, WebSocketSession session) throws IOException;
 }

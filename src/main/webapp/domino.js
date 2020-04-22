@@ -8,6 +8,15 @@ function getFichaSelected(){
     return [fichaN1, fichaN2]
 }
 
+function deleteFichaPuesta(ficha){
+    var ops = document.getElementById("fichas");
+    for(var i = 0; i < ops.length; i++){
+        if(ops.options[i].value == ficha){
+            ops.remove(i);
+        }
+    }
+}
+
 function ViewModel() {
     var self = this;
     self.usuarios = {};
@@ -114,6 +123,7 @@ function ViewModel() {
                 data.fichaN2 = aux
             }
             document.getElementById("box" + posicionString).innerHTML = data.fichaN1 + ' | ' + data.fichaN2
+            deleteFichaPuesta(document.getElementById("box" + posicionString).innerHTML)
         }
     }
 }
