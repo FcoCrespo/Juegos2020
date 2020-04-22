@@ -247,14 +247,14 @@ public class DominoMatch extends Match {
         }
         
         boolean colocacionCorrecta = true;
-        if(tablero.isEmpty()==false) {
+        if(tablero.size()!=0) {
         	colocacionCorrecta = false;
     		if(posicionTablero == true) {
     			FichaDomino fichaIzq = tablero.peek();
     			System.out.println("La ficha del tablero a la izquierda es: "+fichaIzq.getNumber1()+" | "+fichaIzq.getNumber2());
     			if(fichaIzq.getNumber1()==this.fichaColocada.getNumber1()) {
     				System.out.println("Entro en correcta izq rotando"); 
-    				
+    				System.out.println("El jugador ha colocado la ficha: "+this.fichaColocada.getNumber1()+" | "+this.fichaColocada.getNumber2());
     				this.fichaColocada.setNumber1(number_2);
     				this.fichaColocada.setNumber2(number_1);
     				
@@ -264,7 +264,8 @@ public class DominoMatch extends Match {
     			}
     			if(fichaIzq.getNumber1()==this.fichaColocada.getNumber2()) {
     				System.out.println("Entro en correcta izq sin rotar"); 
-    				
+    				System.out.println("El jugador ha colocado la ficha: "+this.fichaColocada.getNumber1()+" | "+this.fichaColocada.getNumber2());
+
     				tablero.addFirst(this.fichaColocada);
     				colocacionCorrecta = true;
     			}
@@ -274,14 +275,16 @@ public class DominoMatch extends Match {
     			System.out.println("La ficha del tablero a la derecha es: "+fichaDer.getNumber1()+" | "+fichaDer.getNumber2());
     			if(fichaDer.getNumber2()==this.fichaColocada.getNumber1()) {
     				System.out.println("Entro en correcta derecha sin rotar");
-    				
+    				System.out.println("El jugador ha colocado la ficha: "+this.fichaColocada.getNumber1()+" | "+this.fichaColocada.getNumber2());
+
     				colocacionCorrecta = true;
     				tablero.addLast(this.fichaColocada);
     			}
     			if(fichaDer.getNumber2()==this.fichaColocada.getNumber2()) {
     				
     				System.out.println("Entro en correcta derecha rotando");
-    				
+    				System.out.println("El jugador ha colocado la ficha: "+this.fichaColocada.getNumber1()+" | "+this.fichaColocada.getNumber2());
+
     				this.fichaColocada.setNumber1(number_2);
     				this.fichaColocada.setNumber2(number_1);
     				
