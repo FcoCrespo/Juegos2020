@@ -54,6 +54,26 @@ function ViewModel() {
         }
     }
 
+    self.rob = function ($data) {
+        var msg = {
+            type: "robCard",
+            idMatch: sessionStorage.idMatch
+        };
+        if(!finished){
+            ws.send(JSON.stringify(msg))
+        }
+
+    }
+
+    self.pass = function ($data) {
+        var msg = {
+            type: "passTurn",
+            idMatch: sessionStorage.idMatch
+        };
+        if(!finished){
+            ws.send(JSON.stringify(msg))
+        }
+    }
 
     function buildTablero() {
         var n1 = 5;
@@ -104,6 +124,14 @@ function ViewModel() {
         if(data.type == "matchFinished"){
             self.mensaje(data.result);
             finished = true;
+        }
+
+        if(data.type == "cardRobbed"){
+            var option = document.createElement("option");
+            option.value = self.fichaN1 + ' | ' + self.fichaN2;
+            option.text = self.fichaN1 + ' | ' + self.fichaN2;
+            var fichasOps = document.getElementById("fichas");
+            fichasOps.add(option)
         }
 
         if(data.type == "matchPlay"){

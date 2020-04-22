@@ -93,6 +93,8 @@
 <div class="ControlBotones">
 	<button data-bind="click: doPlay.bind($data, true)">Añadir a la izquierda</button>
 	<button data-bind="click: doPlay.bind($data, false)">Añadir a la derecha</button>
+	<button data-bind="click: rob.bind($data)">Robar ficha</button>
+	<button data-bind="click: pass.bind($data)">Pasar turno</button>
 </div>
 <script>
 $(document).ready(function() {
