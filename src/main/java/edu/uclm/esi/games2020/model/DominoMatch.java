@@ -193,15 +193,10 @@ public class DominoMatch extends Match {
     		if(fichaIzq.getNumber1()==this.fichasJugadores.get(i).getNumber1() || fichaIzq.getNumber2()==this.fichasJugadores.get(i).getNumber2()) {
     			continuar=true;
     		}
-    		if(fichaIzq.getNumber2()==this.fichasJugadores.get(i).getNumber1() || fichaIzq.getNumber1()==this.fichasJugadores.get(i).getNumber2()) {
+    		if(fichaDer.getNumber2()==this.fichasJugadores.get(i).getNumber1() || fichaDer.getNumber2()==this.fichasJugadores.get(i).getNumber2()) {
     			continuar=true;
     		}
-    		if(fichaIzq.getNumber1()==this.fichasJugadores.get(i).getNumber1() || fichaIzq.getNumber2()==this.fichasJugadores.get(i).getNumber2()) {
-    			continuar=true;
-    		}
-    		if(fichaIzq.getNumber2()==this.fichasJugadores.get(i).getNumber1() || fichaIzq.getNumber1()==this.fichasJugadores.get(i).getNumber2()) {
-    			continuar=true;
-    		}
+    		
     	}
     	return continuar;
     	
@@ -252,22 +247,23 @@ public class DominoMatch extends Match {
         }
         
         boolean colocacionCorrecta = true;
-        if(!tablero.isEmpty()) {
+        if(tablero.isEmpty()==false) {
         	colocacionCorrecta = false;
     		if(posicionTablero == true) {
     			FichaDomino fichaIzq = tablero.peek();
-    			System.out.println("La ficha de la derecha es: "+fichaIzq.getNumber1()+" | "+fichaIzq.getNumber2());
-    			if(fichaIzq.getNumber1()==this.fichaColocada.getNumber1() || fichaIzq.getNumber2()==this.fichaColocada.getNumber2()) {
-    				System.out.println("Entro en correcta 1");
-    				
-    				colocacionCorrecta = true;
-    				tablero.addFirst(this.fichaColocada);
-    			}
-    			if(fichaIzq.getNumber2()==this.fichaColocada.getNumber1() || fichaIzq.getNumber1()==this.fichaColocada.getNumber2()) {
-    				System.out.println("Entro en correcta 2"); 
+    			System.out.println("La ficha del tablero a la izquierda es: "+fichaIzq.getNumber1()+" | "+fichaIzq.getNumber2());
+    			if(fichaIzq.getNumber1()==this.fichaColocada.getNumber1()) {
+    				System.out.println("Entro en correcta izq rotando"); 
     				
     				this.fichaColocada.setNumber1(number_2);
     				this.fichaColocada.setNumber2(number_1);
+    				
+    				System.out.println();
+    				tablero.addFirst(this.fichaColocada);
+    				colocacionCorrecta = true;
+    			}
+    			if(fichaIzq.getNumber1()==this.fichaColocada.getNumber2()) {
+    				System.out.println("Entro en correcta izq sin rotar"); 
     				
     				tablero.addFirst(this.fichaColocada);
     				colocacionCorrecta = true;
@@ -275,16 +271,16 @@ public class DominoMatch extends Match {
     		}
     		else {
     			FichaDomino fichaDer = tablero.poll();
-    			System.out.println("La ficha de la derecha es: "+fichaDer.getNumber1()+" | "+fichaDer.getNumber2());
-    			if(fichaDer.getNumber1()==this.fichaColocada.getNumber1() || fichaDer.getNumber2()==this.fichaColocada.getNumber2()) {
-    				System.out.println("Entro en correcta 3");
+    			System.out.println("La ficha del tablero a la derecha es: "+fichaDer.getNumber1()+" | "+fichaDer.getNumber2());
+    			if(fichaDer.getNumber2()==this.fichaColocada.getNumber1()) {
+    				System.out.println("Entro en correcta derecha sin rotar");
     				
     				colocacionCorrecta = true;
     				tablero.addLast(this.fichaColocada);
     			}
-    			if(fichaDer.getNumber2()==this.fichaColocada.getNumber1() || fichaDer.getNumber1()==this.fichaColocada.getNumber2()) {
+    			if(fichaDer.getNumber2()==this.fichaColocada.getNumber2()) {
     				
-    				System.out.println("Entro en correcta 4");
+    				System.out.println("Entro en correcta derecha rotando");
     				
     				this.fichaColocada.setNumber1(number_2);
     				this.fichaColocada.setNumber2(number_1);
@@ -296,6 +292,7 @@ public class DominoMatch extends Match {
         	
         }
         else {
+        	System.out.println("El tablero esta vacío y coloca ficha: "+this.fichaColocada.getNumber1()+" | "+this.fichaColocada.getNumber2());
         	tablero.add(this.fichaColocada);
         }
         
