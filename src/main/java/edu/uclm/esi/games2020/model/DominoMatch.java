@@ -286,7 +286,7 @@ public class DominoMatch extends Match {
     public boolean posibleColocacion() {
     	boolean continuar = false;
     	FichaDomino fichaIzq = this.tablero.peek();
-    	FichaDomino fichaDer = this.tablero.poll();
+    	FichaDomino fichaDer = this.tablero.peekLast();
     	for(int i=0; i<this.fichasJugadores.size()&&continuar==false; i++) {
     		if(fichaIzq.getNumber1()==this.fichasJugadores.get(i).getNumber1() || fichaIzq.getNumber2()==this.fichasJugadores.get(i).getNumber2()) {
     			continuar=true;
