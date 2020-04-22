@@ -110,7 +110,7 @@ function ViewModel() {
             if (data.posicion) {
                 var posicionString = self.contBefore.toString()
                 var fila = posicionString.substring(0, 1)
-                self.contBefore++
+                self.contBefore--
             }else{
                 var posicionString = self.contAfter.toString()
                 var fila = posicionString.substring(0, 1)
