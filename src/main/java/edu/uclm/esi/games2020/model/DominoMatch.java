@@ -126,7 +126,7 @@ public class DominoMatch extends Match {
 						this.notifyPlay(session, posicionTablero);
 
 						int w = this.winner(session, doPlay(session));
-
+						
 						if(w == -1) {
 							this.notifyTurn(this.rotateTurn(session));
 						}else if(w == -2){
@@ -167,6 +167,8 @@ public class DominoMatch extends Match {
                     player.send(jso);
                     
                     int w = this.winner(session, doPlay(session));
+                    
+                    
                     if(w == -1) {
 						this.notifyTurn(this.rotateTurn(session));
 					}else if(w == -2){
@@ -200,6 +202,8 @@ public class DominoMatch extends Match {
                         player.send(jso);
                     }
                     int w = this.winner(session, doPlay(session));
+                    
+                    
                     if(w == -1) {
 						this.notifyTurn(this.rotateTurn(session));
 					}else if(w == -2){
@@ -251,10 +255,10 @@ public class DominoMatch extends Match {
     		}
     	}
     	
-    	if(fichasJugadorActual>fichasOtroJugador) {
+    	if(fichasJugadorActual<fichasOtroJugador) {
     		return id;
     	}
-    	else if(fichasJugadorActual<fichasOtroJugador){
+    	else if(fichasJugadorActual>fichasOtroJugador){
     		return this.getIdOtherPlayer(session);
     	}
     	
@@ -264,6 +268,14 @@ public class DominoMatch extends Match {
     
     public boolean manoSinFichas(WebSocketSession session) {
     	boolean tieneFichas = false;
+    	
+    	System.out.println("Las fichas que quedan en las manos de los jugadores son: "+this.fichasJugadores.size());
+    	
+    	for (FichaDomino elem : this.fichasJugadores) {
+    	    System.out.print("["+elem.getNumber1()+" | "+elem.getNumber2()+"] y pertene a: "+elem.getState().getUser().getUserName()+". ");
+    	}
+    	System.out.println("");
+    	
     	for(int i=0; i<this.fichasJugadores.size()&&tieneFichas==false; i++) {
     		if(this.fichasJugadores.get(i).getState().getUser().getSession().getId().equals(session.getId())) {
     			tieneFichas=true;
@@ -284,20 +296,21 @@ public class DominoMatch extends Match {
     
     
     public boolean posibleColocacion() {
-    	boolean continuar = false;
-    	FichaDomino fichaIzq = this.tablero.peek();
-    	FichaDomino fichaDer = this.tablero.peekLast();
-    	for(int i=0; i<this.fichasJugadores.size()&&continuar==false; i++) {
-    		if(fichaIzq.getNumber1()==this.fichasJugadores.get(i).getNumber1() || fichaIzq.getNumber2()==this.fichasJugadores.get(i).getNumber2()) {
-    			continuar=true;
-    		}
-    		else if(fichaDer.getNumber1()==this.fichasJugadores.get(i).getNumber1() || fichaDer.getNumber2()==this.fichasJugadores.get(i).getNumber2()) {
-    			continuar=true;
-    		}
-    		
-    	}
-    	return continuar;
-    	
+        boolean continuar = false;
+        FichaDomino fichaIzq = this.tablero.peek();
+        FichaDomino fichaDer = this.tablero.peekLast();
+        for(int i = 0; i<this.fichasJugadores.size()&& !continuar; i++) {
+        assert fichaIzq != null;
+        if(fichaIzq.getNumber1()==this.fichasJugadores.get(i).getNumber1() || fichaIzq.getNumber1()==this.fichasJugadores.get(i).getNumber2()) {
+            continuar=true;
+          }
+          else if(fichaDer.getNumber2()==this.fichasJugadores.get(i).getNumber1() || fichaDer.getNumber2()==this.fichasJugadores.get(i).getNumber2()) {
+            continuar=true;
+          }
+          
+        }
+        return continuar;
+        
     }
     
     

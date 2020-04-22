@@ -140,7 +140,6 @@ public abstract class Match {
         jso.put("type", "matchFinished");
         jso.put("result", result);
         for (User player : this.players) {
-            jso.put("startData", startData(player));
             player.send(jso);
         }
     }
