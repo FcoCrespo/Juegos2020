@@ -74,16 +74,21 @@ public class DominoMatch extends Match {
     	}
     	System.out.println("");
     	
-    	FichaDomino ficha = new FichaDomino(7,7);
+    	FichaDomino ficha = null;
     	int i=0;
+    	int pos = 0;
     	boolean seguir = true;
-    	for(i=0; i<this.fichasJugadores.size()&&seguir==true; i++) {
+    	do{
+    		
     		if(this.fichasJugadores.get(i).getNumber1()==number_1 && this.fichasJugadores.get(i).getNumber2()==number_2 ) {
     			seguir = false;
+    			pos=i;
     		}
-    	}
+    		i=i+1;
+    	}while(i < this.fichasJugadores.size() && seguir==true);
+    	
     	if(seguir==false) {
-    		ficha = this.fichasJugadores.get(i);
+    		ficha = this.fichasJugadores.get(pos);
     		
     		System.out.println("La ficha cogida de la mano es: "+ficha.getNumber1()+" | "+ficha.getNumber2());
     		return ficha;
@@ -98,6 +103,8 @@ public class DominoMatch extends Match {
 	    	 
 			int number_1 = jso.getInt("number_1");
 			int number_2 = jso.getInt("number_2");
+			System.out.println("Llega la ficha con los valores: "+number_1+" | "+number_2);
+			
 			boolean posicionTablero = jso.getBoolean("posicion");
 			
 			//this.fichaColocada = new FichaDomino(number_1,number_2);
