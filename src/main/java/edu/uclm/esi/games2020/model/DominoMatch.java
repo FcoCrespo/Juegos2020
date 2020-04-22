@@ -349,18 +349,19 @@ public class DominoMatch extends Match {
     	System.out.println("");
     	
     	int i=0;
+    	int pos = 0;
     	for(i=0; i<this.fichasJugadores.size()&&seguir==true; i++) {
 			if(this.fichasJugadores.get(i).getNumber1()==this.fichaColocada.getNumber1()&&this.fichasJugadores.get(i).getNumber2()==this.fichaColocada.getNumber2()) {
-				
+				pos=i;
 				seguir=false;
 			}
 			else if(this.fichasJugadores.get(i).getNumber1()==this.fichaColocada.getNumber2()&&this.fichasJugadores.get(i).getNumber2()==this.fichaColocada.getNumber1()) {
-			
+				pos=i;
 				seguir=false;
 			}
 		}
     	
-    	FichaDomino fichaEliminada = this.fichasJugadores.remove(i);
+    	FichaDomino fichaEliminada = this.fichasJugadores.remove(pos);
     	System.out.println("La ficha eliminada de la mano es: "+fichaEliminada.getNumber1()+" | "+fichaEliminada.getNumber2());
     	
     	System.out.println("El tamaño de las fichas de la mano tras eliminar esta ficha es: "+this.fichasJugadores.size());
