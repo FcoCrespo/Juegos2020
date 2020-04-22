@@ -208,7 +208,7 @@ public class TresEnRayaMatch extends Match {
 					this.notifyFinish(result);
 				}
 			}else {
-				this.notifyInvalidPlay(session);
+				this.notifyInvalidPlay(session, "Invalid play");
 			}
 		
 		

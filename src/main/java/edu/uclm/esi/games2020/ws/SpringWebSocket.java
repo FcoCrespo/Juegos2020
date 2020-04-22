@@ -9,6 +9,7 @@ import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import edu.uclm.esi.games2020.model.DominoMatch;
 import edu.uclm.esi.games2020.model.Manager;
 import edu.uclm.esi.games2020.model.Match;
 import edu.uclm.esi.games2020.model.User;
@@ -47,13 +48,13 @@ public class SpringWebSocket extends TextWebSocketHandler {
         	Match match = Manager.get().findMatch(jso.getString("idMatch"));
         	match.play(jso, session);
         }
-        /*if(jso.getString("type").equals("robarFicha")){
-        	Match match = Manager.get().findMatch(jso.getString("idMatch"));
-        	match.robar(jso, session);
+        if(jso.getString("type").equals("robCard")){
+        	DominoMatch match = (DominoMatch) Manager.get().findMatch(jso.getString("idMatch"));
+        	match.robar(session);
         }
-        if(jso.getString("type").equals("pasarTurno")){
-        	Match match = Manager.get().findMatch(jso.getString("idMatch"));
-        	match.pasar(jso, session);
-        }*/
+        if(jso.getString("type").equals("passTurn")){
+        	DominoMatch match = (DominoMatch) Manager.get().findMatch(jso.getString("idMatch"));
+        	match.pasar(session);
+        }
     }
 }

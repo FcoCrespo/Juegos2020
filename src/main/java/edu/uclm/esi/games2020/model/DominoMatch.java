@@ -55,7 +55,7 @@ public class DominoMatch extends Match {
     	for (int i = 0; i<7; i++) {
     		ficha = this.deck.getFicha();
     		ficha.setState(player.getState());
-    		fichasJugadores.add(ficha);
+    		this.fichasJugadores.add(ficha);
     		jsaFichasJugador.put(ficha.toJSON());
     		System.out.println("Ficha : "+ficha.getNumber1()+" | "+ficha.getNumber2());
     	}
@@ -112,7 +112,7 @@ public class DominoMatch extends Match {
 			if (session == this.turn) {
 				this.fichaColocada = obtenerFichaJugador(number_1,number_2);
 				if(this.fichaColocada==null) {
-					this.notifyInvalidPlay(session);
+					this.notifyInvalidPlay(session, "La ficha no existe");
 				}
 				else {
 					System.out.println("El jugador "+this.getNamePlayerSession(session));
@@ -137,22 +137,93 @@ public class DominoMatch extends Match {
 							this.notifyFinish(result);
 						}
 					}else {
-						this.notifyInvalidPlay(session);
+						this.notifyInvalidPlay(session, "Jugada inválida");
 					}
 				}			
 	        }
 			else {
-				this.notifyInvalidPlay(session);
+				this.notifyInvalidPlay(session, "No es su turno");
 			}
 		
 		
 	}
     
+    public void robar(WebSocketSession session) throws IOException {
+    	if (session == this.turn) {
+    		if(this.deck.getFichas().size()!=0) {
+    			FichaDomino ficha = this.deck.getFicha();
+        		ficha.setState(this.getUserSession(session).getState());
+        		this.fichasJugadores.add(ficha);
+        		System.out.println("el jugador roba la ficha : "+ficha.getNumber1()+" | "+ficha.getNumber2());
+        		int pos = this.getPosOfSession(session);
+                if(pos>=0) {
+                    JSONObject jso = this.toJSON();
+                    jso.put("type", "cardRobbed");
+                    String name = players.get(pos).getUserName();
+                    jso.put("playName", name);
+                    jso.put("fichaN1", ficha.getNumber1());
+                    jso.put("fichaN2", ficha.getNumber2());
+                    User player = this.getUserSession(session);
+                    player.send(jso);
+                    
+                    int w = this.winner(session, doPlay(session));
+                    if(w == -1) {
+						this.notifyTurn(this.rotateTurn(session));
+					}else if(w == -2){
+						String result = "La partida ha finalizado en empate";
+						this.notifyFinish(result);
+					}else {
+						String result = this.players.get(w).getUserName() + " ha ganado la partida";
+						this.notifyFinish(result);
+					}
+                }
+    		}
+    		else {
+    			this.notifyInvalidPlay(session, "Ya no hay más fichas para robar.");
+    		}
+    	}
+		else {
+			this.notifyInvalidPlay(session, "No es su turno.");
+		}
+    }
+    
+    
+    public void pasar(WebSocketSession session) throws IOException {
+    	if (session == this.turn) {
+        		int pos = this.getPosOfSession(session);
+                if(pos>=0) {
+                    JSONObject jso = this.toJSON();
+                    jso.put("type", "matchChangeTurn");
+                    String name = players.get(pos).getUserName();
+                    jso.put("playName", name);
+                    for (User player : this.players) {
+                        player.send(jso);
+                    }
+                    int w = this.winner(session, doPlay(session));
+                    if(w == -1) {
+						this.notifyTurn(this.rotateTurn(session));
+					}else if(w == -2){
+						String result = "La partida ha finalizado en empate";
+						this.notifyFinish(result);
+					}else {
+						String result = this.players.get(w).getUserName() + " ha ganado la partida";
+						this.notifyFinish(result);
+					}
+                }
+    		}
+    	else {
+    		this.notifyInvalidPlay(session, "No es su turno.");
+    	}
+    	
+    }
+		
+	
+    
     public int winner(WebSocketSession session, int id) {
         if (manoSinFichas(session)==false) {
             return id;
         }
-        else if(this.deck.getFichas().isEmpty()) {
+        else if(this.deck.getFichas().size()==0) {
         	boolean continuar = posibleColocacion();
     		if(continuar==false) {
     			int mismasFichas = contarFichasJugadores(session, id);
@@ -371,6 +442,9 @@ public class DominoMatch extends Match {
     	}
     	System.out.println("");
     }
+
+
+	
     
    
     

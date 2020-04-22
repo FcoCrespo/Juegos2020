@@ -128,8 +128,8 @@ function ViewModel() {
 
         if(data.type == "cardRobbed"){
             var option = document.createElement("option");
-            option.value = self.fichaN1 + ' | ' + self.fichaN2;
-            option.text = self.fichaN1 + ' | ' + self.fichaN2;
+            option.value = data.fichaN1 + ' | ' + data.fichaN2;
+            option.text = data.fichaN1 + ' | ' + data.fichaN2;
             var fichasOps = document.getElementById("fichas");
             fichasOps.add(option)
         }

@@ -51,6 +51,19 @@ public abstract class Match {
         return pos;
     }
     
+    protected User getUserSession(WebSocketSession session) {
+    	User user=null;
+        for (User u : this.players) {
+            if (u.getSession().equals(session)) {
+            	user = u;
+            }
+        }
+        if(user!=null) {
+        	return user;
+        }
+        return null;
+    }
+    
 
     public Match() {
         this.id = UUID.randomUUID().toString();
@@ -159,16 +172,15 @@ public abstract class Match {
         return name;
     }
 
-    public void notifyInvalidPlay(WebSocketSession session) throws IOException {
+    public void notifyInvalidPlay(WebSocketSession session, String mensaje) throws IOException {
         JSONObject jso = this.toJSON();
         jso.put("type", "matchIlegalPlay");
-        jso.put("result", "Ilegal play");
+        jso.put("result", mensaje);
         int pos = getPosOfSession(session);
         if(pos>=0)
             players.get(pos).send(jso);
     }
 
 	abstract public void play(JSONObject jso, WebSocketSession session) throws IOException;
-	//abstract public void robar(JSONObject jso, WebSocketSession session) throws IOException;
-	//abstract public void pasar(JSONObject jso, WebSocketSession session) throws IOException;
+	
 }
