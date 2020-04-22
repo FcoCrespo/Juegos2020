@@ -25,7 +25,7 @@ public class DominoMatch extends Match {
         this.deck.suffle();
         this.tablero = new ArrayDeque<>();
         this.fichasJugadores = new ArrayList<>();
-        this.fichaColocada = new FichaDomino(7,7);
+        this.fichaColocada = null;
     }
 
 
@@ -67,10 +67,26 @@ public class DominoMatch extends Match {
 
     public FichaDomino obtenerFichaJugador(int number_1, int number_2) {
     	
-    	for(int i=0; i<this.fichasJugadores.size(); i++) {
-    		if(fichasJugadores.get(i).getNumber1()==number_1 && fichasJugadores.get(i).getNumber2()==number_2 ) {
-    			return fichasJugadores.get(i);
+    	System.out.println("Las fichas que hay en la mano son: ");
+    	
+    	for (FichaDomino elem : this.fichasJugadores) {
+    	    System.out.print("["+elem.getNumber1()+" | "+elem.getNumber2()+"] ");
+    	}
+    	System.out.println("");
+    	
+    	FichaDomino ficha = new FichaDomino(7,7);
+    	int i=0;
+    	boolean seguir = true;
+    	for(i=0; i<this.fichasJugadores.size()&&seguir==true; i++) {
+    		if(this.fichasJugadores.get(i).getNumber1()==number_1 && this.fichasJugadores.get(i).getNumber2()==number_2 ) {
+    			seguir = false;
     		}
+    	}
+    	if(seguir==false) {
+    		ficha = this.fichasJugadores.get(i);
+    		
+    		System.out.println("La ficha cogida de la mano es: "+ficha.getNumber1()+" | "+ficha.getNumber2());
+    		return ficha;
     	}
     	
     	return null;
@@ -88,31 +104,35 @@ public class DominoMatch extends Match {
 			
 			if (session == this.turn) {
 				this.fichaColocada = obtenerFichaJugador(number_1,number_2);
-				
-				System.out.println("El jugador "+this.getNamePlayerSession(session));
-				System.out.println("Ficha colocada: "+this.fichaColocada.getNumber1() + " | "+this.fichaColocada.getNumber2());
-				
-				System.out.println("La ficha pertenece al jugador con la sesion: "+this.fichaColocada.getState().getUser().getSession().getId());
-				System.out.println("La sesion del jugador es: "+session.getId());
-				
-				if(this.verifyPlay(session, number_1, number_2, posicionTablero)) {
-					quitarFichaMano();
-					this.notifyPlay(session, posicionTablero);
-
-					int w = this.winner(session, doPlay(session));
-
-					if(w == -1) {
-						this.notifyTurn(this.rotateTurn(session));
-					}else if(w == -2){
-						String result = "La partida ha finalizado en empate";
-						this.notifyFinish(result);
-					}else {
-						String result = this.players.get(w).getUserName() + " ha ganado la partida";
-						this.notifyFinish(result);
-					}
-				}else {
+				if(this.fichaColocada==null) {
 					this.notifyInvalidPlay(session);
 				}
+				else {
+					System.out.println("El jugador "+this.getNamePlayerSession(session));
+					System.out.println("Ficha colocada: "+this.fichaColocada.getNumber1() + " | "+this.fichaColocada.getNumber2());
+					
+					System.out.println("La ficha pertenece al jugador con la sesion: "+this.fichaColocada.getState().getUser().getSession().getId());
+					System.out.println("La sesion del jugador es: "+session.getId());
+					
+					if(this.verifyPlay(session, number_1, number_2, posicionTablero)) {
+						quitarFichaMano();
+						this.notifyPlay(session, posicionTablero);
+
+						int w = this.winner(session, doPlay(session));
+
+						if(w == -1) {
+							this.notifyTurn(this.rotateTurn(session));
+						}else if(w == -2){
+							String result = "La partida ha finalizado en empate";
+							this.notifyFinish(result);
+						}else {
+							String result = this.players.get(w).getUserName() + " ha ganado la partida";
+							this.notifyFinish(result);
+						}
+					}else {
+						this.notifyInvalidPlay(session);
+					}
+				}			
 	        }
 			else {
 				this.notifyInvalidPlay(session);
@@ -314,16 +334,34 @@ public class DominoMatch extends Match {
     
     public void quitarFichaMano() {
     	boolean seguir = true;
-    	for(int i=0; i<this.fichasJugadores.size()&&seguir==true; i++) {
+    	System.out.println("El tamaño de las fichas de la mano es: "+this.fichasJugadores.size());
+    	
+    	for (FichaDomino elem : this.fichasJugadores) {
+    	    System.out.print("["+elem.getNumber1()+" | "+elem.getNumber2()+"] ");
+    	}
+    	System.out.println("");
+    	
+    	int i=0;
+    	for(i=0; i<this.fichasJugadores.size()&&seguir==true; i++) {
 			if(this.fichasJugadores.get(i).getNumber1()==this.fichaColocada.getNumber1()&&this.fichasJugadores.get(i).getNumber2()==this.fichaColocada.getNumber2()) {
-				this.fichasJugadores.remove(i);
+				
 				seguir=false;
 			}
-			if(this.fichasJugadores.get(i).getNumber1()==this.fichaColocada.getNumber2()&&this.fichasJugadores.get(i).getNumber2()==this.fichaColocada.getNumber1()) {
-				this.fichasJugadores.remove(i);
+			else if(this.fichasJugadores.get(i).getNumber1()==this.fichaColocada.getNumber2()&&this.fichasJugadores.get(i).getNumber2()==this.fichaColocada.getNumber1()) {
+			
 				seguir=false;
 			}
 		}
+    	
+    	FichaDomino fichaEliminada = this.fichasJugadores.remove(i);
+    	System.out.println("La ficha eliminada de la mano es: "+fichaEliminada.getNumber1()+" | "+fichaEliminada.getNumber2());
+    	
+    	System.out.println("El tamaño de las fichas de la mano tras eliminar esta ficha es: "+this.fichasJugadores.size());
+    	
+    	for (FichaDomino elem : this.fichasJugadores) {
+    	    System.out.print("["+elem.getNumber1()+" | "+elem.getNumber2()+"] ");
+    	}
+    	System.out.println("");
     }
     
    

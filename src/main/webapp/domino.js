@@ -26,8 +26,8 @@ function ViewModel() {
     self.fichas = ko.observableArray([]);
     self.contAfter = 35; // Centro
     self.contBefore = 35;
-  
-    
+
+
     var finished = false;
 
     buildTablero();
@@ -114,14 +114,44 @@ function ViewModel() {
                 if(self.contBefore == 35){
                     self.contAfter++
                 }
-                self.contBefore--
+                var contN1 = parseInt(self.contBefore.toString().substring(0,1))
+                var contN2 = parseInt(self.contBefore.toString().substring(1,3))
+                if(contN1%2){
+                    if(contN2 == 0){
+                        contN1++
+                    }else {
+                        contN2--
+                    }
+                }else{
+                    if(contN2 == 10){
+                        contN1++
+                    }else{
+                        contN2++
+                    }
+                }
+                self.contBefore = contN1.toString() + contN2.toString()
             }else{
                 var posicionString = self.contAfter.toString()
                 var fila = posicionString.substring(0, 1)
                 if(self.contAfter == 35){
                     self.contBefore--
                 }
-                self.contAfter++
+                var contN1 = parseInt(self.contAfter.toString().substring(0,1))
+                var contN2 = parseInt(self.contAfter.toString().substring(1,3))
+                if(contN1%2){
+                    if (contN2 == 10) {
+                        contN1--
+                    } else {
+                        contN2++
+                    }
+                }else{
+                    if(contN2 == 0){
+                        contN1--
+                    }else{
+                        contN2--
+                    }
+                }
+                self.contAfter = contN1.toString() + contN2.toString()
             }
 
             if (!(parseInt(fila)%2)) {
