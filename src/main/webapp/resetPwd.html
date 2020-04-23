@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<meta charset="UTF-8">
+<title>Recuperación de password</title>
+</head>
+<body>
+	<h3>Recuperación de password</h3>
+	<input type="text" placeholder="Escribe tu nombre de usuario" id="userName"><br>
+	<input type="password" placeholder="Escribe tu nueva contraseña" id="pwd1"><br>
+	<input type="password" placeholder="Confirma tu nueva contraseña" id="pwd2"><br>
+	<button onclick="resetearPwd()">Restablecer contraseña</button>
+</body>
+
+<script>
+function resetearPwd() {
+	var request=new XMLHttpRequest();
+	request.open("post", "/resetPassword");
+	request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	request.onreadystatechange=function() {
+		if (request.readyState==4) {
+			var respuesta=JSON.parse(request.responseText);
+			if (respuesta.userName) {
+				alert("Password cambiada correctamente");
+			} else {
+				alert("Error al cambiar la password");
+			}				
+		}
+	};
+	var p = {
+		userName   : document.getElementById("userName").value,
+		pwd1 : document.getElementById("pwd1").value,
+		pwd2 : document.getElementById("pwd2").value,
+		token : sessionStorage.token
+	};
+	request.send("p=" + JSON.stringify(p));
+}
+</script>
+</html>
