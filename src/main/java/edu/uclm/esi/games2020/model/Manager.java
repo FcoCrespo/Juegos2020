@@ -63,16 +63,27 @@ public class Manager {
 		return ManagerHolder.singleton;
 	}
 
-	public User login(HttpSession httpSession, String userName, String pwd) throws Exception {
-		User user = UserDAO.identify(userName, pwd);
-		user.setHttpSession(httpSession);
-		this.connectedUsersByUserName.put(userName, user);
-		this.connectedUsersByHttpSession.put(httpSession.getId(), user);
-		return user;
+	public User login(HttpSession httpSession, String userName, String pwd){
+		User user;
+		try {
+			user = UserDAO.identify(userName, pwd);
+			user.setHttpSession(httpSession);
+			this.connectedUsersByUserName.put(userName, user);
+			this.connectedUsersByHttpSession.put(httpSession.getId(), user);
+			return user;
+		} catch (Exception e) {
+			log.info("\n Error en Login");
+			return null;
+		}
+		
 	}
 	
-	public void register(String email, String userName, String pwd, String cuenta) throws Exception {
-		UserDAO.insert(email, userName, pwd, cuenta);
+	public void register(String email, String userName, String pwd, String cuenta) {
+		try {
+			UserDAO.insert(email, userName, pwd, cuenta);
+		} catch (Exception e) {
+			log.info("\n Error en Register");
+		}
 	}
 	
 	public void logout(User user) {
@@ -90,15 +101,20 @@ public class Manager {
 	
 	
 	
-	public void playerReady(String idMatch) throws Exception {
+	public void playerReady(String idMatch){
 		Match match = this.pendingMatches.get(idMatch);
-		match.playerReady();
-		if (match.ready()) {
-			this.pendingMatches.remove(idMatch);
-			this.inPlayMatches.put(idMatch, match);
-			match.notifyStart();
-			match.notifyTurn(match.inicializaTurn());
+		try {
+			match.playerReady();
+			if (match.ready()) {
+				this.pendingMatches.remove(idMatch);
+				this.inPlayMatches.put(idMatch, match);
+				match.notifyStart();
+				match.notifyTurn(match.inicializaTurn());
+			}
+		} catch (Exception e) {
+			log.info("\n Error en jugador preparado");
 		}
+		
 	}
 
 	public User findUserByHttpSessionId(String httpSessionId) {
@@ -154,7 +170,7 @@ public class Manager {
 		
 	}
 
-	public boolean emailPassReq(String emailReq) throws Exception {
+	public boolean emailPassReq(String emailReq) {
 		
 	   		Properties prop = new Properties();
 			prop.put("mail.smtp.host", "smtp.gmail.com");
@@ -196,9 +212,9 @@ public class Manager {
 	            String mensaje ="\nEmail enviado al correo "+email;
 	            log.info(mensaje);
 
-	        } catch (MessagingException e) {
+	        }catch (Exception e) {
 	        	log.info("Se ha producido un error al enviar el correo.");
-	        }
+			}
 		
 			
 			

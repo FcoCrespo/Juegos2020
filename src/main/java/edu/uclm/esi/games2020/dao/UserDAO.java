@@ -4,16 +4,18 @@ package edu.uclm.esi.games2020.dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Logger;
 
 import edu.uclm.esi.games2020.model.*;
 
 public class UserDAO {
+	private static final Logger log = Logger.getLogger(UserDAO.class.getName());
 	
 	private  UserDAO(){
 		
 	}
 
-    public static void insert(String email, String userName, String pwd, String cuenta) throws Exception {
+    public static void insert(String email, String userName, String pwd, String cuenta){
         try (WrapperConnection bd = Broker.get().getBd()) {
             String sql = "insert into user (email, user_name, pwd) values (?, ?, AES_ENCRYPT(?, 'software'))";
             try (PreparedStatement ps = bd.prepareStatement(sql)) {
@@ -28,10 +30,12 @@ public class UserDAO {
                 ps.setString(2, cuenta);
                 ps.executeUpdate();
             }
-        }
+        } catch (Exception e) {
+			log.info("\nError al insertar usuario");
+		}
     }
 
-    public static User identify(String userName, String pwd) throws Exception {
+    public static User identify(String userName, String pwd) {
         try (WrapperConnection bd = Broker.get().getBd()) {
             String sql = "SELECT u.user_name, u.email, CAST(AES_DECRYPT(c.cuenta, 'software') AS CHAR(100)) user_cuenta " + 
             		"FROM user u, user_cuenta c " + 
@@ -50,14 +54,17 @@ public class UserDAO {
                     } else throw new SQLException();
                 }
             }
-        }
+        } catch (Exception e) {
+        	log.info("\nError al identificar usuario");
+			return null;
+		}
     }
     
-    public static String getEmail(String email) throws Exception{
+    public static String getEmail(String email){
         try (WrapperConnection bd = Broker.get().getBd()) {
-            String sql = "SELECT email " + 
-            		"FROM user u " + 
-            		"WHERE email = ?";
+            String sql = "SELECT email " +
+                    "FROM user u " +
+                    "WHERE email = ?";
             try (PreparedStatement ps = bd.prepareStatement(sql)) {
                 ps.setString(1, email);
                 try (ResultSet rs = ps.executeQuery()) {
@@ -67,15 +74,17 @@ public class UserDAO {
                         return reqEmail;
                     }
                 }
-                catch(Exception e) {
-                	return null;
-                }
+
             }
+        } catch (Exception e1) {
+            log.info("\nError al obtener email");
+            return null;
         }
-		return null;
+        return null;
+
     }
     
-    public static void cambiarPass(String email, String pwd) throws Exception {
+    public static void cambiarPass(String email, String pwd)  {
     	try (WrapperConnection bd = Broker.get().getBd()) {
             String sql = "update user set pwd = AES_ENCRYPT(?, 'software') where email = ?";
             try (PreparedStatement ps = bd.prepareStatement(sql)) {
@@ -88,6 +97,8 @@ public class UserDAO {
                 ps.setString(1, email);
                 ps.executeUpdate();
             }
-        }
+        } catch (Exception e) {
+        	log.info("\nError al cambiar pass");
+		}
     }
 }

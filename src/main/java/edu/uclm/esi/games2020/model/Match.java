@@ -11,6 +11,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.web.socket.WebSocketSession;
 
+import edu.uclm.esi.games2020.dao.UserDAO;
+
 public abstract class Match {
 	
 	private final Logger log = Logger.getLogger(Match.class.getName());
@@ -102,10 +104,8 @@ public abstract class Match {
     public String getId() {
         return id;
     }
-
+    
     public abstract void start() throws Exception;
-	
-
 
     public JSONObject toJSON() {
         JSONObject jso = new JSONObject();
@@ -147,8 +147,14 @@ public abstract class Match {
 
     protected abstract JSONObject startData(User player);
 
-    public void playerReady() throws Exception{
-        ++readyPlayers;
+    public void playerReady(){
+        try {
+        	++readyPlayers;
+        }
+        catch(Exception e) {
+        	log.info("\nError en playerReady");
+        }     
+        
     }
 
     public void setGame(Game game) {

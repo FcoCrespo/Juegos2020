@@ -29,13 +29,19 @@ public class Controller {
 	private final Logger log = Logger.getLogger(Controller.class.getName());
 	
 	@PostMapping("/email")
-    public void emailPassRequest(HttpSession session, @RequestBody Map<String, Object> email) throws Exception {
+    public void emailPassRequest(HttpSession session, @RequestBody Map<String, Object> email) {
         JSONObject jso = new JSONObject(email);
         String emailReq = jso.getString("email");
-        boolean result = Manager.get().emailPassReq(emailReq);
-        if(!result) {
-        	throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This email does not exist in the system.");
-        }
+        boolean result;
+		try {
+			result = Manager.get().emailPassReq(emailReq);
+			if(!result) {
+	        	throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This email does not exist in the system.");
+	        }
+		} catch (Exception e) {
+			log.info("\nError al enviar el correo");
+		}
+        
         
     }
 	
@@ -62,17 +68,23 @@ public class Controller {
     }
 	
     @PostMapping("/login")
-    public void login(HttpSession session, @RequestBody Map<String, Object> credenciales) throws Exception {
+    public void login(HttpSession session, @RequestBody Map<String, Object> credenciales){
         JSONObject jso = new JSONObject(credenciales);
         String userName = jso.getString("userName");
         String pwd = jso.getString("pwd");
-        User user = Manager.get().login(session, userName, pwd);
-        session.setAttribute("user", user);
-        log.info("\nLa sesión actual del usuario es: "+session.getId());
+        User user;
+		try {
+			user = Manager.get().login(session, userName, pwd);
+			session.setAttribute("user", user);
+	        log.info("\nLa sesión actual del usuario es: "+session.getId());
+		} catch (Exception e) {
+			log.info("\nError en login");
+		}
+        
     }
 
     @PostMapping("/register")
-    public void register(HttpSession session, @RequestBody Map<String, Object> credenciales) throws Exception {
+    public void register(HttpSession session, @RequestBody Map<String, Object> credenciales){
         JSONObject jso = new JSONObject(credenciales);
         String userName = jso.getString("userName");
         String email = jso.getString("email");
@@ -80,7 +92,11 @@ public class Controller {
         String pwd2 = jso.getString("pwd2");
         String cuenta = jso.getString("cuenta");
         if (pwd1.equals(pwd2)) {
-            Manager.get().register(email, userName, pwd1, cuenta);
+            try {
+				Manager.get().register(email, userName, pwd1, cuenta);
+			} catch (Exception e) {
+				log.info("\nError en registro");
+			}
         }
         else {
         	throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The passwords are not the same");

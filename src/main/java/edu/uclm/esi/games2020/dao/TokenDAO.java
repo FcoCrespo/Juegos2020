@@ -1,18 +1,19 @@
 package edu.uclm.esi.games2020.dao;
 
 import java.sql.PreparedStatement;
+import java.util.logging.Logger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import edu.uclm.esi.games2020.model.Token;
 
 public class TokenDAO {
-	
+	private static final Logger log = Logger.getLogger(TokenDAO.class.getName());
 	private TokenDAO(){
 		
 	}
 	
-	public static Token getToken(String token) throws Exception {
+	public static Token getToken(String token) {
         try (WrapperConnection bd = Broker.get().getBd()) {
             String sql = "SELECT id, email, token, fecha " + 
             		"FROM user_token " + 
@@ -30,10 +31,13 @@ public class TokenDAO {
                     } else throw new SQLException();
                 }
             }
-        }
+        } catch (Exception e) {
+			log.info("\nSe ha producido un error al recibir el token");
+		}
+		return null;
     }
 	
-	public static void insert(String email, String token) throws Exception {
+	public static void insert(String email, String token){
         try (WrapperConnection bd = Broker.get().getBd()) {
         	
         	Long fecha = System.currentTimeMillis();
@@ -45,16 +49,20 @@ public class TokenDAO {
                 ps.setLong(3, fecha);
                 ps.executeUpdate();
             }
-        }
+        } catch (Exception e) {
+        	log.info("\nSe ha producido un error al introducir el token");
+		}
     }
 	
-	public static void borrarToken(String token) throws Exception {
+	public static void borrarToken(String token){
     	try (WrapperConnection bd = Broker.get().getBd()) {
             String sql2 = "delete from user_token where token = ?";
             try (PreparedStatement ps = bd.prepareStatement(sql2)) {
                 ps.setString(1, token);
                 ps.executeUpdate();
             }
-        }
+        } catch (Exception e) {
+        	log.info("\nSe ha producido un error al borrar el token");
+		}
     }
 }

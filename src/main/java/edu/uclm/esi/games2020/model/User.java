@@ -62,8 +62,14 @@ public class User implements Serializable{
         this.cuenta = cuenta;
     }
 
-    public static User identify(String userName, String pwd) throws Exception {
-        return UserDAO.identify(userName, pwd);
+    public static User identify(String userName, String pwd){
+    	try {
+    		return UserDAO.identify(userName, pwd);
+    	}
+    	catch(Exception e) {
+    		return null;
+    	}
+        
     }
 
     public JSONObject toJSON() {
