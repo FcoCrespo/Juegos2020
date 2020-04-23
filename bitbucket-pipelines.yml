@@ -5,10 +5,38 @@
 # You can specify a custom docker image from Docker Hub as your build environment.
 image: maven:3.6.1
 
-pipelines:
-  default:
-    - step:
+
+clone:
+  depth: full              # SonarCloud scanner needs the full history to assign issues properly
+
+definitions:
+  caches:
+    sonar: ~/.sonar/cache  # Caching SonarCloud artifacts will speed up your build
+  steps:
+    - step: &build-test-sonarcloud
+        name: Build, test and analyze on SonarCloud
         caches:
           - maven
-        script: # Modify the commands below to build your repository.
-          - mvn -B verify # -B batch mode makes Maven less verbose
+          - sonar
+        script:
+          - mvn -B org.jacoco:jacoco-maven-plugin:prepare-agent verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+        artifacts:
+          - target/**
+    - step: &build-test
+        name: Build and test
+        caches:
+          - maven
+        script:
+          - mvn -B verify
+        artifacts:
+          - target/**
+pipelines:
+  default:
+    - step: *build-test
+  branches:
+    master:
+      - step: *build-test-sonarcloud
+  pull-requests:
+    '**':
+      - step: *build-test-sonarcloud
+
