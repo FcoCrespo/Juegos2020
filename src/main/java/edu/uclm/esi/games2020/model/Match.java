@@ -11,8 +11,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.web.socket.WebSocketSession;
 
-import edu.uclm.esi.games2020.dao.UserDAO;
-
 public abstract class Match {
 	
 	private final Logger log = Logger.getLogger(Match.class.getName());
