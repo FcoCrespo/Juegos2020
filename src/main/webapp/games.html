@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Games</title>
+<meta charset="UTF-8">
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<style>
+	.square {
+		border: 1px outset black;
+		height:25px;
+		width:25px;
+		cursor:pointer;
+	}
+	.col-centered{
+	    float: none;
+	    margin: 0 auto;
+	}
+</style>
+</head>
+
+<body>
+
+<div class="jumbotron text-center">
+	<h2 id="nombreUsuario"></h2>
+	<h2 id="cuenta"></h2>
+</div>
+
+<div class="jumbotron text-center">
+	<h2>Juegos</h2>
+	<div id="mensajeCorto"></div>	
+</div>
+
+<div class="jumbotron text-center">
+	Elige un juego<br>
+	<select id="selectGames"></select>
+	<button onclick="joinToMatch()">Empezar partida</button>
+</div>
+
+<script>
+	
+	$(document).ready(function() {
+		getUser();
+	});
+
+	function joinToMatch() {
+		var info = {
+			type : "JoinToMatch",
+			game : selectGames.value
+		};
+		
+		var data = {
+			data : JSON.stringify(info),
+			url : "joinToMatch",
+			type : "post",
+			contentType: 'application/json',
+			dataType : 'json',
+			success : function(response) {
+				if (response.type=="match") {
+					var match = response.match;
+					sessionStorage.idMatch = match.idMatch;
+					sessionStorage.started = match.started;
+					sessionStorage.game = info.game;
+
+
+					if (sessionStorage.game == "Escoba"){
+						window.location.href="escoba.html"
+					}
+
+					if (sessionStorage.game == "Tres En Raya"){
+						window.location.href="ter.html"
+					}
+
+					if (sessionStorage.game == "Domino"){
+						window.location.href="domino.html"
+					}
+				}
+			},
+			error : function(response) {
+				var arrayResponse = Object.values(response);
+				var elems = arrayResponse[17];
+				alert("Error : "+elems.message);
+			}
+		};
+		$.ajax(data);
+	}
+
+	getGames();
+	
+	function getGames() {
+		$.get("getGames", function(juegos) {
+			var options = "";
+			for (var i=0; i<juegos.length; i++) {
+				options = options + "<option>" + juegos[i] + "</option>";
+			}
+			selectGames.innerHTML = options;
+		});
+	}
+	
+	
+	
+	function getUser() {
+		$.get("getUser", function(datos) {
+	        var nombreUsuario =  datos[0];
+	        var cuenta =  datos[1];
+	        console.log('nombreUsuario: '+nombreUsuario);
+	        console.log('cuenta: '+cuenta);
+	        document.getElementById("nombreUsuario").textContent = 'Bienvenido ' + nombreUsuario;
+	        document.getElementById("cuenta").textContent = '(Decrypt Credit Account): ' + cuenta;
+		});
+	}
+</script>
+
+</body>
+</html>
