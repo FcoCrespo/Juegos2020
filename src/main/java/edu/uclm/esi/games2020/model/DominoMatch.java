@@ -230,9 +230,9 @@ public class DominoMatch extends Match {
 
 		for (FichaDomino fichasJugadore : this.fichasJugadores) {
 			if (fichasJugadore.getState().getUser().getSession().getId().equals(session.getId())) {
-				fichasJugadorActual++;
+				fichasJugadorActual=fichasJugadorActual+fichasJugadore.getNumber1()+fichasJugadore.getNumber2();
 			} else {
-				fichasOtroJugador++;
+				fichasOtroJugador=fichasOtroJugador+fichasJugadore.getNumber1()+fichasJugadore.getNumber2();
 			}
 		}
 
