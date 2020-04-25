@@ -112,12 +112,24 @@ public class UserDAO {
         }
 	}
 	
-    public static void updateWins(String username, int wins)  {
+    public static void updateWins(String username)  {
     	try (WrapperConnection bd = Broker.get().getBd()) {
-            String sql = "update user set wins = ? where user_name = ?";
+    		int wins=0;
+    		String sql = "select wins from user where user_name = ?";
             try (PreparedStatement ps = bd.prepareStatement(sql)) {
-                ps.setInt(1, wins);
-                ps.setString(2, username);
+            	ps.setString(1, username);
+            	ResultSet resultSet = ps.executeQuery();
+            	
+            	while (resultSet.next()) {
+            		wins = resultSet.getInt("wins");
+            	}
+            	
+            }
+            String sql2 = "update user set wins = ? where user_name = ?";
+            try (PreparedStatement ps = bd.prepareStatement(sql2)) {
+            	wins++;
+            	ps.setString(1, Integer.toString(wins));
+            	ps.setString(2, username);
                 ps.executeUpdate();
             }
 

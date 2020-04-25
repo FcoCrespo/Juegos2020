@@ -113,9 +113,4 @@ public class User implements Serializable{
         return this.session;
     }
 
-	public void updateWins() {
-		this.setWins(this.getWins()+1);
-		
-	}
-
 }

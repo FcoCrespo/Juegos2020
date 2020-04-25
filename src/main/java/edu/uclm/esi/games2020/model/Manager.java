@@ -232,8 +232,7 @@ public class Manager {
 
 	public void actualizarVictorias(String winner) {
 		User u = this.findUserByUsername(winner);
-		u.updateWins();
-		UserDAO.updateWins(winner, u.getWins());		
+		UserDAO.updateWins(winner);		
 	}
 
 }
