@@ -191,16 +191,20 @@ public class DominoMatch extends Match {
 
 	public void pasar(WebSocketSession session) throws IOException {
 		if (session == this.turn) {
-			int pos = this.getPosOfSession(session);
-			if (pos >= 0) {
-				JSONObject jso = this.toJSON();
-				jso.put("type", "matchChangeTurn");
-				String name = players.get(pos).getUserName();
-				jso.put(JSON_PLAYER, name);
-				for (User player : this.players) {
-					player.send(jso);
+			if (!this.deck.getFichas().isEmpty()) {
+				this.notifyInvalidPlay(session, "Roba ficha primero.");
+			} else {
+				int pos = this.getPosOfSession(session);
+				if (pos >= 0) {
+					JSONObject jso = this.toJSON();
+					jso.put("type", "matchChangeTurn");
+					String name = players.get(pos).getUserName();
+					jso.put(JSON_PLAYER, name);
+					for (User player : this.players) {
+						player.send(jso);
+					}
+					this.notifyNext(session);
 				}
-				this.notifyNext(session);
 			}
 		} else {
 			this.notifyInvalidPlay(session, "No es su turno.");
@@ -230,9 +234,9 @@ public class DominoMatch extends Match {
 
 		for (FichaDomino fichasJugadore : this.fichasJugadores) {
 			if (fichasJugadore.getState().getUser().getSession().getId().equals(session.getId())) {
-				fichasJugadorActual=fichasJugadorActual+fichasJugadore.getNumber1()+fichasJugadore.getNumber2();
+				fichasJugadorActual = fichasJugadorActual + fichasJugadore.getNumber1() + fichasJugadore.getNumber2();
 			} else {
-				fichasOtroJugador=fichasOtroJugador+fichasJugadore.getNumber1()+fichasJugadore.getNumber2();
+				fichasOtroJugador = fichasOtroJugador + fichasJugadore.getNumber1() + fichasJugadore.getNumber2();
 			}
 		}
 
@@ -417,7 +421,7 @@ public class DominoMatch extends Match {
 		}
 		log.info("\n");
 	}
-	
+
 	@Override
 	public String inicializaTurn() throws IOException {
 
@@ -436,7 +440,7 @@ public class DominoMatch extends Match {
 	private User getStartingPlayer() {
 
 		FichaDomino f = this.getHigherDouble(this.fichasJugadores);
-		if(f!=null)
+		if (f != null)
 			return f.getState().getUser();
 		return null;
 	}
