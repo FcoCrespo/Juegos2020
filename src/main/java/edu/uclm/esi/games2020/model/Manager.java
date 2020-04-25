@@ -232,7 +232,12 @@ public class Manager {
 
 	public void actualizarVictorias(String winner) {
 		User u = this.findUserByUsername(winner);
-		UserDAO.updateWins(winner);		
+		UserDAO.updateWins(winner);
+	}
+
+	public void endMatch(Match match) {
+		this.inPlayMatches.remove(match.getId());
+		
 	}
 
 }
