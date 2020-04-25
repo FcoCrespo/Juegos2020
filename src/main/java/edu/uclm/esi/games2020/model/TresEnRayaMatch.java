@@ -186,7 +186,7 @@ public class TresEnRayaMatch extends Match {
     }
 
 	@Override
-	public void play(JSONObject jso, WebSocketSession session) throws IOException {
+	public String play(JSONObject jso, WebSocketSession session) throws IOException {
 	
 			int x = jso.getInt("lugar_x");
 			int y = jso.getInt("lugar_y");
@@ -206,11 +206,12 @@ public class TresEnRayaMatch extends Match {
 				}else {
 					String result = this.players.get(w).getUserName() + " ha ganado la partida";
 					this.notifyFinish(result);
+					return this.players.get(w).getUserName();
 				}
 			}else {
 				this.notifyInvalidPlay(session, "Invalid play");
 			}
-		
+		return null;
 		
 	}
 }

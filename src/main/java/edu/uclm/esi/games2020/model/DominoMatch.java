@@ -101,19 +101,21 @@ public class DominoMatch extends Match {
 	}
 
 	@Override
-	public void play(JSONObject jso, WebSocketSession session) throws IOException {
+	public String play(JSONObject jso, WebSocketSession session) throws IOException {
 		if(jso.getString("type").equals("doPlayDO"))
-			this.doPlayDO(jso, session);
+			return this.doPlayDO(jso, session);
 
 		if(jso.getString("type").equals("robCard"))
 			this.robar(session);
 
 		if(jso.getString("type").equals("passTurn"))
 			this.pasar(session);
+		
+		return null;
 	}
 
 
-	public void doPlayDO(JSONObject jso, WebSocketSession session) throws IOException {
+	public String doPlayDO(JSONObject jso, WebSocketSession session) throws IOException {
 
 		int number1 = jso.getInt("number_1");
 		int number2 = jso.getInt("number_2");
@@ -135,7 +137,7 @@ public class DominoMatch extends Match {
 				if(this.verifyPlay(session, number1, number2, posicionTablero)) {
 					quitarFichaMano();
 					this.notifyPlay(session, posicionTablero);
-					this.notifyNext(session);
+					return this.notifyNext(session);
 				}else {
 					this.notifyInvalidPlay(session, "Jugada inválida");
 				}
@@ -144,9 +146,10 @@ public class DominoMatch extends Match {
 		else {
 			this.notifyInvalidPlay(session, "No es su turno");
 		}
+		return null;
 	}
 
-	public void notifyNext(WebSocketSession session) throws IOException {
+	public String notifyNext(WebSocketSession session) throws IOException {
 		int w = this.winner(session, doPlay(session));
 
 		if(w == -1) {
@@ -155,7 +158,9 @@ public class DominoMatch extends Match {
 			this.notifyFinish(EMPATA_PARTIDA);
 		}else {
 			this.notifyFinish(this.players.get(w).getUserName() + GANA_PARTIDA);
+			return this.players.get(w).getUserName();
 		}
+		return null;
 	}
 
 	public void robar(WebSocketSession session) throws IOException {

@@ -122,7 +122,9 @@ public class Manager {
 		return this.connectedUsersByHttpSession.get(httpSessionId);
 	}
 
-	
+	public User findUserByUsername(String username) {
+		return this.connectedUsersByUserName.get(username);
+	}
 
 	public Match findMatch(String idMatch) {
 		
@@ -226,6 +228,12 @@ public class Manager {
 			
 			
 			return true;
+	}
+
+	public void actualizarVictorias(String winner) {
+		User u = this.findUserByUsername(winner);
+		u.updateWins();
+		UserDAO.updateWins(winner, u.getWins());		
 	}
 
 }

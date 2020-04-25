@@ -53,7 +53,8 @@ public class EscobaMatch extends Match {
     }
 
     @Override
-    public void play(JSONObject jso, WebSocketSession session) {
+    public String play(JSONObject jso, WebSocketSession session) {
+		return null;
     	//ejemplo del profesor
     }
 

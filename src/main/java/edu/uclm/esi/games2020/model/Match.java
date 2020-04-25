@@ -190,6 +190,6 @@ public abstract class Match {
             players.get(pos).send(jso);
     }
 
-    public abstract void play(JSONObject jso, WebSocketSession session) throws IOException;
+    public abstract String play(JSONObject jso, WebSocketSession session) throws IOException;
 	
 }

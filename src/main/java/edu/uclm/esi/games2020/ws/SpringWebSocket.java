@@ -52,7 +52,9 @@ public class SpringWebSocket extends TextWebSocketHandler {
 
         if(jso.getString("type").equals("doPlayDO")){
         	Match match = Manager.get().findMatch(jso.getString(IDMATCH));
-        	match.play(jso, session);
+        	String winner = match.play(jso, session);
+        	if(winner!=null)
+        		Manager.get().actualizarVictorias(winner);
         }
         if(jso.getString("type").equals("robCard")){
         	Match match = Manager.get().findMatch(jso.getString(IDMATCH));
