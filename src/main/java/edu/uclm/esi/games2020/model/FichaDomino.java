@@ -43,13 +43,10 @@ public class FichaDomino {
 	public void setState(IState state) {
 		this.state = state;
 	}
-    
-	public boolean equals(FichaDomino other) {
-		System.out.println(other.getNumber1());
-		if(this.getNumber1() == other.getNumber1() && this.getNumber2() == other.getNumber2()) {
-			return true;
-		}
-		return false;
+    	
+	@Override
+	public boolean equals(Object other) {
+		return (this.getNumber1() == ((FichaDomino) other).getNumber1() && this.getNumber2() == ((FichaDomino) other).getNumber2());
 	} 
 	
 }
