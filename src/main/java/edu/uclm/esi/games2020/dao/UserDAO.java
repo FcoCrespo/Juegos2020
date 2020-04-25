@@ -122,8 +122,9 @@ public class UserDAO {
             	while (resultSet.next()) {
             		wins = resultSet.getInt("wins");
             	}
-            	
+            	resultSet.close();
             }
+            
             String sql2 = "update user set wins = ? where user_name = ?";
             try (PreparedStatement ps = bd.prepareStatement(sql2)) {
             	wins++;
