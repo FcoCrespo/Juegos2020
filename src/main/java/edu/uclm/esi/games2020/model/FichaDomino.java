@@ -44,5 +44,12 @@ public class FichaDomino {
 		this.state = state;
 	}
     
+	public boolean equals(FichaDomino other) {
+		System.out.println(other.getNumber1());
+		if(this.getNumber1() == other.getNumber1() && this.getNumber2() == other.getNumber2()) {
+			return true;
+		}
+		return false;
+	} 
 	
 }

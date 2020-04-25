@@ -13,7 +13,7 @@ import javax.servlet.http.HttpSession;
 import javax.mail.*;
 
 import org.json.JSONArray;
-
+import org.json.JSONObject;
 
 import edu.uclm.esi.games2020.dao.UserDAO;
 import edu.uclm.esi.games2020.dao.TokenDAO;
@@ -122,7 +122,9 @@ public class Manager {
 		return this.connectedUsersByHttpSession.get(httpSessionId);
 	}
 
-	
+	public User findUserByUsername(String username) {
+		return this.connectedUsersByUserName.get(username);
+	}
 
 	public Match findMatch(String idMatch) {
 		
@@ -142,6 +144,10 @@ public class Manager {
 		return result;
 	}
 
+	public JSONArray getRankedUsers(HttpSession session) {
+		return UserDAO.getRankedUsers();
+	}
+	
 	public int changePass(String token, String pass) {
 		
 		
@@ -222,6 +228,16 @@ public class Manager {
 			
 			
 			return true;
+	}
+
+	public void actualizarVictorias(String winner) {
+		User u = this.findUserByUsername(winner);
+		UserDAO.updateWins(winner);
+	}
+
+	public void endMatch(Match match) {
+		this.inPlayMatches.remove(match.getId());
+		
 	}
 
 }

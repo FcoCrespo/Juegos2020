@@ -6,6 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import edu.uclm.esi.games2020.model.*;
 
 public class UserDAO {
@@ -17,7 +20,7 @@ public class UserDAO {
 
     public static void insert(String email, String userName, String pwd, String cuenta){
         try (WrapperConnection bd = Broker.get().getBd()) {
-            String sql = "insert into user (email, user_name, pwd) values (?, ?, AES_ENCRYPT(?, 'software'))";
+            String sql = "insert into user (email, user_name, pwd, wins) values (?, ?, AES_ENCRYPT(?, 'software'), 0)";
             try (PreparedStatement ps = bd.prepareStatement(sql)) {
                 ps.setString(1, email);
                 ps.setString(2, userName);
@@ -82,6 +85,58 @@ public class UserDAO {
         }
         return null;
 
+    }
+    
+	public static JSONArray getRankedUsers() {
+		JSONArray jsa = new JSONArray();
+        try (WrapperConnection bd = Broker.get().getBd()) {
+            String sql = "SELECT user_name, wins " +
+                    "FROM user ORDER BY wins DESC";
+            try (PreparedStatement ps = bd.prepareStatement(sql)) {
+                try (ResultSet rs = ps.executeQuery()) {
+                	String username;
+                    int wins;                    
+                    while (rs.next()) {
+                        username = rs.getString(1);
+                        wins = rs.getInt(2);
+                        jsa.put(username);
+                        jsa.put(Integer.toString(wins));
+                    }
+                    return jsa;                    
+                }
+
+            }
+        } catch (Exception e1) {
+            log.info("\nError al obtener email");
+            return null;
+        }
+	}
+	
+    public static void updateWins(String username)  {
+    	try (WrapperConnection bd = Broker.get().getBd()) {
+    		int wins=0;
+    		String sql = "select wins from user where user_name = ?";
+            try (PreparedStatement ps = bd.prepareStatement(sql)) {
+            	ps.setString(1, username);
+            	ResultSet resultSet = ps.executeQuery();
+            	
+            	while (resultSet.next()) {
+            		wins = resultSet.getInt("wins");
+            	}
+            	
+            }
+            String sql2 = "update user set wins = ? where user_name = ?";
+            try (PreparedStatement ps = bd.prepareStatement(sql2)) {
+            	wins++;
+            	ps.setString(1, Integer.toString(wins));
+            	ps.setString(2, username);
+                ps.executeUpdate();
+            }
+
+        } catch (Exception e) {
+        	log.info("\n"+e.getMessage());
+        	log.info("\nError al actualizar victorias");
+		}
     }
     
     public static void cambiarPass(String email, String pwd)  {

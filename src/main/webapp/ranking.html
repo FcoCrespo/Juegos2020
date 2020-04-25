@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Ranking</title>
+<meta charset="UTF-8">
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<style>
+	.square {
+		border: 1px outset black;
+		height:25px;
+		width:25px;
+		cursor:pointer;
+	}
+	.col-centered{
+	    float: none;
+	    margin: 0 auto;
+	}
+	td
+{
+    padding:0 15px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="jumbotron text-center">
+	<h2>Ranking</h2>
+	<div id="mensajeCorto"></div>
+	<a href='games.html'>Volver a Juegos</a>	
+</div>
+
+<div class="jumbotron text-center">
+<table border="1" id="rank-table" style="border:1px solid black;margin-left:auto;margin-right:auto;">
+    <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Jugador</th>
+            <th>Victorias</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+</div>
+
+<script>
+
+	var table = document.getElementById("rank-table");
+	var row;
+	var rank=1;
+	var rank_cell;
+	var username_cell;
+	var wins_cell;
+	
+	$(document).ready(function() {
+		getRankedUsers();
+	});	
+	
+	function getRankedUsers() {
+		$.get("getRankedUsers", function(datos) {
+	        
+	        for (let i = 0; i < datos.length; i+=2) {
+	        	
+	        	var number = i/2 +1;
+	        	console.log(number)
+	        	row = table.insertRow(number);
+	        	rank_cell = row.insertCell(0);
+	        	username_cell = row.insertCell(1);
+	        	wins_cell = row.insertCell(2);
+	        	rank_cell.innerHTML = number;
+	        	username_cell.innerHTML = datos[i];
+	        	wins_cell.innerHTML = datos[i+1];
+	        	  
+	        }
+		});
+	}
+</script>
+
+</body>
+</html>

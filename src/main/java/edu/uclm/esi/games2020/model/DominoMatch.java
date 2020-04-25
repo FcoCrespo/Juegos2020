@@ -22,7 +22,6 @@ public class DominoMatch extends Match {
 	private static final String GANA_PARTIDA = " ha ganado la partida";
 	private static final String JSON_PLAYER = "playName";
 
-
 	public DominoMatch() {
 		super();
 		this.deck = new DeckDomino();
@@ -31,7 +30,6 @@ public class DominoMatch extends Match {
 		this.fichasJugadores = new ArrayList<>();
 		this.fichaColocada = null;
 	}
-
 
 	@Override
 	protected void setState(User user) {
@@ -53,14 +51,15 @@ public class DominoMatch extends Match {
 		JSONArray jsaFichasJugador = new JSONArray();
 
 		for (FichaDomino fichasJugadore : fichasJugadores)
-			log.info("\nFicha que tienen los jugadores : " + fichasJugadore.getNumber1() + " | " + fichasJugadore.getNumber2());
+			log.info("\nFicha que tienen los jugadores : " + fichasJugadore.getNumber1() + " | "
+					+ fichasJugadore.getNumber2());
 
-		for (int i = 0; i<7; i++) {
+		for (int i = 0; i < 7; i++) {
 			ficha = this.deck.getFicha();
 			ficha.setState(player.getState());
 			this.fichasJugadores.add(ficha);
 			jsaFichasJugador.put(ficha.toJSON());
-			log.info("\nFicha : "+ficha.getNumber1()+" | "+ficha.getNumber2());
+			log.info("\nFicha : " + ficha.getNumber1() + " | " + ficha.getNumber2());
 		}
 
 		JSONObject jso = new JSONObject();
@@ -73,27 +72,28 @@ public class DominoMatch extends Match {
 		log.info("\nLas fichas que hay en la mano son: ");
 
 		for (FichaDomino elem : this.fichasJugadores)
-			log.info("["+elem.getNumber1()+" | "+elem.getNumber2()+"] ");
+			log.info("[" + elem.getNumber1() + " | " + elem.getNumber2() + "] ");
 
 		log.info("\n");
 
 		FichaDomino ficha;
-		int i=0;
+		int i = 0;
 		int pos = 0;
 		boolean seguir = true;
-		do{
+		do {
 
-			if(this.fichasJugadores.get(i).getNumber1()==number1 && this.fichasJugadores.get(i).getNumber2()==number2 ) {
+			if (this.fichasJugadores.get(i).getNumber1() == number1
+					&& this.fichasJugadores.get(i).getNumber2() == number2) {
 				seguir = false;
-				pos=i;
+				pos = i;
 			}
-			i=i+1;
-		}while(i < this.fichasJugadores.size() && seguir);
+			i = i + 1;
+		} while (i < this.fichasJugadores.size() && seguir);
 
-		if(!seguir) {
+		if (!seguir) {
 			ficha = this.fichasJugadores.get(pos);
 
-			log.info("\nLa ficha cogida de la mano es: "+ficha.getNumber1()+" | "+ficha.getNumber2());
+			log.info("\nLa ficha cogida de la mano es: " + ficha.getNumber1() + " | " + ficha.getNumber2());
 			return ficha;
 		}
 
@@ -101,19 +101,20 @@ public class DominoMatch extends Match {
 	}
 
 	@Override
-	public void play(JSONObject jso, WebSocketSession session) throws IOException {
-		if(jso.getString("type").equals("doPlayDO"))
-			this.doPlayDO(jso, session);
+	public String play(JSONObject jso, WebSocketSession session) throws IOException {
+		if (jso.getString("type").equals("doPlayDO"))
+			return this.doPlayDO(jso, session);
 
-		if(jso.getString("type").equals("robCard"))
+		if (jso.getString("type").equals("robCard"))
 			this.robar(session);
 
-		if(jso.getString("type").equals("passTurn"))
+		if (jso.getString("type").equals("passTurn"))
 			this.pasar(session);
+
+		return null;
 	}
 
-
-	public void doPlayDO(JSONObject jso, WebSocketSession session) throws IOException {
+	public String doPlayDO(JSONObject jso, WebSocketSession session) throws IOException {
 
 		int number1 = jso.getInt("number_1");
 		int number2 = jso.getInt("number_2");
@@ -122,51 +123,54 @@ public class DominoMatch extends Match {
 		boolean posicionTablero = jso.getBoolean("posicion");
 
 		if (session == this.turn) {
-			this.fichaColocada = obtenerFichaJugador(number1,number2);
-			if(this.fichaColocada==null) {
+			this.fichaColocada = obtenerFichaJugador(number1, number2);
+			if (this.fichaColocada == null) {
 				this.notifyInvalidPlay(session, "La ficha no existe");
-			}
-			else {
-				log.info("\nEl jugador "+this.getNamePlayerSession(session));
-				log.info("\nFicha colocada: "+this.fichaColocada.getNumber1() + " | "+this.fichaColocada.getNumber2());
-				log.info("\nLa ficha pertenece al jugador con la sesion: "+this.fichaColocada.getState().getUser().getSession().getId());
-				log.info("\nLa sesion del jugador es: "+session.getId());
+			} else {
+				log.info("\nEl jugador " + this.getNamePlayerSession(session));
+				log.info("\nFicha colocada: " + this.fichaColocada.getNumber1() + " | "
+						+ this.fichaColocada.getNumber2());
+				log.info("\nLa ficha pertenece al jugador con la sesion: "
+						+ this.fichaColocada.getState().getUser().getSession().getId());
+				log.info("\nLa sesion del jugador es: " + session.getId());
 
-				if(this.verifyPlay(session, number1, number2, posicionTablero)) {
+				if (this.verifyPlay(session, number1, number2, posicionTablero)) {
 					quitarFichaMano();
 					this.notifyPlay(session, posicionTablero);
-					this.notifyNext(session);
-				}else {
+					return this.notifyNext(session);
+				} else {
 					this.notifyInvalidPlay(session, "Jugada inválida");
 				}
 			}
-		}
-		else {
+		} else {
 			this.notifyInvalidPlay(session, "No es su turno");
 		}
+		return null;
 	}
 
-	public void notifyNext(WebSocketSession session) throws IOException {
+	public String notifyNext(WebSocketSession session) throws IOException {
 		int w = this.winner(session, doPlay(session));
 
-		if(w == -1) {
+		if (w == -1) {
 			this.notifyTurn(this.rotateTurn(session));
-		}else if(w == -2){
+		} else if (w == -2) {
 			this.notifyFinish(EMPATA_PARTIDA);
-		}else {
+		} else {
 			this.notifyFinish(this.players.get(w).getUserName() + GANA_PARTIDA);
+			return this.players.get(w).getUserName();
 		}
+		return null;
 	}
 
 	public void robar(WebSocketSession session) throws IOException {
 		if (session == this.turn) {
-			if(!this.deck.getFichas().isEmpty()) {
+			if (!this.deck.getFichas().isEmpty()) {
 				FichaDomino ficha = this.deck.getFicha();
 				ficha.setState(this.getUserSession(session).getState());
 				this.fichasJugadores.add(ficha);
-				log.info("\nel jugador roba la ficha : "+ficha.getNumber1()+" | "+ficha.getNumber2());
+				log.info("\nel jugador roba la ficha : " + ficha.getNumber1() + " | " + ficha.getNumber2());
 				int pos = this.getPosOfSession(session);
-				if(pos>=0) {
+				if (pos >= 0) {
 					JSONObject jso = this.toJSON();
 					jso.put("type", "cardRobbed");
 					String name = players.get(pos).getUserName();
@@ -177,21 +181,18 @@ public class DominoMatch extends Match {
 					player.send(jso);
 					this.notifyNext(session);
 				}
-			}
-			else {
+			} else {
 				this.notifyInvalidPlay(session, "Ya no hay más fichas para robar.");
 			}
-		}
-		else {
+		} else {
 			this.notifyInvalidPlay(session, "No es su turno.");
 		}
 	}
 
-
 	public void pasar(WebSocketSession session) throws IOException {
 		if (session == this.turn) {
 			int pos = this.getPosOfSession(session);
-			if(pos>=0) {
+			if (pos >= 0) {
 				JSONObject jso = this.toJSON();
 				jso.put("type", "matchChangeTurn");
 				String name = players.get(pos).getUserName();
@@ -201,30 +202,24 @@ public class DominoMatch extends Match {
 				}
 				this.notifyNext(session);
 			}
-		}
-		else {
+		} else {
 			this.notifyInvalidPlay(session, "No es su turno.");
 		}
 
 	}
 
-
-
 	public int winner(WebSocketSession session, int id) {
 		if (!manoSinFichas(session)) {
 			return id;
-		}
-		else if(this.deck.getFichas().isEmpty() && this.tablero.isEmpty()) {
+		} else if (this.deck.getFichas().isEmpty() && this.tablero.isEmpty()) {
 			boolean continuar = posibleColocacion();
-			if(!continuar) {
+			if (!continuar) {
 
 				return contarFichasJugadores(session, id);
-			}
-			else {
+			} else {
 				return -1;
 			}
-		}
-		else {
+		} else {
 			return -1;
 		}
 	}
@@ -235,16 +230,15 @@ public class DominoMatch extends Match {
 
 		for (FichaDomino fichasJugadore : this.fichasJugadores) {
 			if (fichasJugadore.getState().getUser().getSession().getId().equals(session.getId())) {
-				fichasJugadorActual++;
+				fichasJugadorActual=fichasJugadorActual+fichasJugadore.getNumber1()+fichasJugadore.getNumber2();
 			} else {
-				fichasOtroJugador++;
+				fichasOtroJugador=fichasOtroJugador+fichasJugadore.getNumber1()+fichasJugadore.getNumber2();
 			}
 		}
 
-		if(fichasJugadorActual<fichasOtroJugador) {
+		if (fichasJugadorActual < fichasOtroJugador) {
 			return id;
-		}
-		else if(fichasJugadorActual>fichasOtroJugador){
+		} else if (fichasJugadorActual > fichasOtroJugador) {
 			return this.getIdOtherPlayer(session);
 		}
 
@@ -258,19 +252,19 @@ public class DominoMatch extends Match {
 		log.info(fichasmano);
 
 		for (FichaDomino elem : this.fichasJugadores) {
-			log.info("\n["+elem.getNumber1()+" | "+elem.getNumber2()+"] y pertene a: "+elem.getState().getUser().getUserName()+". ");
+			log.info("\n[" + elem.getNumber1() + " | " + elem.getNumber2() + "] y pertene a: "
+					+ elem.getState().getUser().getUserName() + ". ");
 		}
 		log.info("\n");
 
-		for(int i=0; i<this.fichasJugadores.size()&&!tieneFichas; i++) {
-			if(this.fichasJugadores.get(i).getState().getUser().getSession().getId().equals(session.getId())) {
-				tieneFichas=true;
+		for (int i = 0; i < this.fichasJugadores.size() && !tieneFichas; i++) {
+			if (this.fichasJugadores.get(i).getState().getUser().getSession().getId().equals(session.getId())) {
+				tieneFichas = true;
 			}
 		}
 		return tieneFichas;
 
 	}
-
 
 	public int doPlay(WebSocketSession session) {
 
@@ -278,17 +272,18 @@ public class DominoMatch extends Match {
 
 	}
 
-
 	public boolean posibleColocacion() {
 		FichaDomino fichaIzq = this.tablero.peek();
 		FichaDomino fichaDer = this.tablero.peekLast();
 		for (FichaDomino fichasJugadore : this.fichasJugadores) {
 			assert fichaIzq != null;
-			if (fichaIzq.getNumber1() == fichasJugadore.getNumber1() || fichaIzq.getNumber1() == fichasJugadore.getNumber2()) {
+			if (fichaIzq.getNumber1() == fichasJugadore.getNumber1()
+					|| fichaIzq.getNumber1() == fichasJugadore.getNumber2()) {
 				return true;
 			}
 
-			if (fichaDer.getNumber2() == fichasJugadore.getNumber1() || fichaDer.getNumber2() == fichasJugadore.getNumber2()) {
+			if (fichaDer.getNumber2() == fichasJugadore.getNumber1()
+					|| fichaDer.getNumber2() == fichasJugadore.getNumber2()) {
 				return true;
 			}
 		}
@@ -297,7 +292,7 @@ public class DominoMatch extends Match {
 
 	public void notifyPlay(WebSocketSession session, boolean posicionTablero) throws IOException {
 		int pos = this.getPosOfSession(session);
-		if(pos>=0) {
+		if (pos >= 0) {
 			JSONObject jso = this.toJSON();
 			jso.put("type", "matchPlay");
 			String name = players.get(pos).getUserName();
@@ -311,17 +306,19 @@ public class DominoMatch extends Match {
 		}
 
 	}
-	
+
 	public boolean fichaPerteneJugador(WebSocketSession session) {
 		return this.fichaColocada.getState().getUser().getSession().getId().equals(session.getId());
 	}
-	
+
 	public boolean fichaEnMano() {
 		for (FichaDomino fichasJugadore : this.fichasJugadores) {
-			if (fichasJugadore.getNumber1() == this.fichaColocada.getNumber1() && fichasJugadore.getNumber2() == this.fichaColocada.getNumber2()) {
+			if (fichasJugadore.getNumber1() == this.fichaColocada.getNumber1()
+					&& fichasJugadore.getNumber2() == this.fichaColocada.getNumber2()) {
 				return true;
 			}
-			if (fichasJugadore.getNumber1() == this.fichaColocada.getNumber2() && fichasJugadore.getNumber2() == this.fichaColocada.getNumber1()) {
+			if (fichasJugadore.getNumber1() == this.fichaColocada.getNumber2()
+					&& fichasJugadore.getNumber2() == this.fichaColocada.getNumber1()) {
 				return true;
 			}
 		}
@@ -329,47 +326,43 @@ public class DominoMatch extends Match {
 	}
 
 	public boolean verifyPlay(WebSocketSession session, int number1, int number2, boolean posicionTablero) {
-		
 
-		if(!fichaPerteneJugador(session)) {
+		if (!fichaPerteneJugador(session)) {
 			return false;
 		}
 
-		if(!fichaEnMano()) {
+		if (!fichaEnMano()) {
 			return false;
 		}
 
 		boolean colocacionCorrecta = true;
-		if(!tablero.isEmpty()) {
-			
+		if (!tablero.isEmpty()) {
+
 			colocacionCorrecta = false;
-			if(posicionTablero) {
+			if (posicionTablero) {
 				FichaDomino fichaIzq = tablero.peek();
 				assert fichaIzq != null;
-				
-				if(fichaIzq.getNumber1()==this.fichaColocada.getNumber1()) {
-					
+
+				if (fichaIzq.getNumber1() == this.fichaColocada.getNumber1()) {
+
 					this.fichaColocada.setNumber1(number2);
 					this.fichaColocada.setNumber2(number1);
-					
+
 					tablero.addFirst(this.fichaColocada);
 					colocacionCorrecta = true;
-				}
-				else if(fichaIzq.getNumber1()==this.fichaColocada.getNumber2()) {
+				} else if (fichaIzq.getNumber1() == this.fichaColocada.getNumber2()) {
 
 					tablero.addFirst(this.fichaColocada);
 					colocacionCorrecta = true;
 				}
-			}
-			else {
+			} else {
 				FichaDomino fichaDer = tablero.peekLast();
 				assert fichaDer != null;
-				
-				if(fichaDer.getNumber2()==this.fichaColocada.getNumber1()) {
+
+				if (fichaDer.getNumber2() == this.fichaColocada.getNumber1()) {
 					colocacionCorrecta = true;
 					tablero.addLast(this.fichaColocada);
-				}
-				else if(fichaDer.getNumber2()==this.fichaColocada.getNumber2()) {
+				} else if (fichaDer.getNumber2() == this.fichaColocada.getNumber2()) {
 
 					this.fichaColocada.setNumber1(number2);
 					this.fichaColocada.setNumber2(number1);
@@ -379,8 +372,7 @@ public class DominoMatch extends Match {
 				}
 			}
 
-		}
-		else {
+		} else {
 			tablero.addFirst(this.fichaColocada);
 		}
 
@@ -388,43 +380,97 @@ public class DominoMatch extends Match {
 	}
 
 	public void quitarFichaMano() {
-		String estadoFichasMano = "\nEl tamaño de las fichas de la mano es: "+this.fichasJugadores.size();
+		String estadoFichasMano = "\nEl tamaño de las fichas de la mano es: " + this.fichasJugadores.size();
 		log.info(estadoFichasMano);
 
 		for (FichaDomino elem : this.fichasJugadores) {
-			String estadoFichaJugadores = "\n["+elem.getNumber1()+" | "+elem.getNumber2()+"] ";
+			String estadoFichaJugadores = "\n[" + elem.getNumber1() + " | " + elem.getNumber2() + "] ";
 			log.info(estadoFichaJugadores);
 		}
 		log.info("\n");
 
 		int i;
 		int pos = 0;
-		for(i=0; i<this.fichasJugadores.size(); i++) {
-			if(this.fichasJugadores.get(i).getNumber1()==this.fichaColocada.getNumber1()&&this.fichasJugadores.get(i).getNumber2()==this.fichaColocada.getNumber2()) {
-				pos=i;
+		for (i = 0; i < this.fichasJugadores.size(); i++) {
+			if (this.fichasJugadores.get(i).getNumber1() == this.fichaColocada.getNumber1()
+					&& this.fichasJugadores.get(i).getNumber2() == this.fichaColocada.getNumber2()) {
+				pos = i;
 			}
 
-			if(this.fichasJugadores.get(i).getNumber1()==this.fichaColocada.getNumber2()&&this.fichasJugadores.get(i).getNumber2()==this.fichaColocada.getNumber1()) {
-				pos=i;
+			if (this.fichasJugadores.get(i).getNumber1() == this.fichaColocada.getNumber2()
+					&& this.fichasJugadores.get(i).getNumber2() == this.fichaColocada.getNumber1()) {
+				pos = i;
 			}
 		}
 		FichaDomino fichaEliminada = this.fichasJugadores.remove(pos);
-		String estadoFichaEliminada ="\nLa ficha eliminada de la mano es: "+fichaEliminada.getNumber1()+" | "+fichaEliminada.getNumber2();
+		String estadoFichaEliminada = "\nLa ficha eliminada de la mano es: " + fichaEliminada.getNumber1() + " | "
+				+ fichaEliminada.getNumber2();
 		log.info(estadoFichaEliminada);
 
-		String estadoDeck = "\nEl tamaño de las fichas de la mano tras eliminar esta ficha es: "+this.fichasJugadores.size();
+		String estadoDeck = "\nEl tamaño de las fichas de la mano tras eliminar esta ficha es: "
+				+ this.fichasJugadores.size();
 		log.info(estadoDeck);
 
 		for (FichaDomino elem : this.fichasJugadores) {
-			String estadoFichaDeck = "\n["+elem.getNumber1()+" | "+elem.getNumber2()+"] ";
+			String estadoFichaDeck = "\n[" + elem.getNumber1() + " | " + elem.getNumber2() + "] ";
 			log.info(estadoFichaDeck);
 		}
 		log.info("\n");
 	}
+	
+	@Override
+	public String inicializaTurn() throws IOException {
 
+		User u = this.getStartingPlayer();
 
+		if (u != null) {
+			this.turn = u.getSession();
+			this.notifyTurn(u.getUserName());
+			return u.getUserName();
+		} else {
+			return super.inicializaTurn(); // Si ningun jugador tiene un doble, turno aleatorio
+		}
 
+	}
 
+	private User getStartingPlayer() {
 
+		FichaDomino f = this.getHigherDouble(this.fichasJugadores);
+		if(f!=null)
+			return f.getState().getUser();
+		return null;
+	}
+
+	private FichaDomino getHigherDouble(List<FichaDomino> fichas) {
+
+		int higher = 6;
+		boolean found = false;
+		FichaDomino doble = null;
+
+		while (!found && higher > -1) {
+
+			doble = new FichaDomino(higher, higher);
+			doble = this.find(doble, fichas);
+			if (doble != null)
+				found = true;
+			higher--;
+		}
+
+		if (!found)
+			doble = null;
+
+		return doble;
+
+	}
+
+	private FichaDomino find(FichaDomino doble, List<FichaDomino> fichas) {
+
+		for (FichaDomino ficha : fichas) {
+			if (ficha.equals(doble)) {
+				return ficha;
+			}
+		}
+		return null;
+	}
 
 }
