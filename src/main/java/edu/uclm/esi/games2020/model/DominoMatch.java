@@ -127,19 +127,24 @@ public class DominoMatch extends Match {
 			if (this.fichaColocada == null) {
 				this.notifyInvalidPlay(session, "La ficha no existe");
 			} else {
-				log.info("\nEl jugador " + this.getNamePlayerSession(session));
-				log.info("\nFicha colocada: " + this.fichaColocada.getNumber1() + " | "
-						+ this.fichaColocada.getNumber2());
-				log.info("\nLa ficha pertenece al jugador con la sesion: "
-						+ this.fichaColocada.getState().getUser().getSession().getId());
-				log.info("\nLa sesion del jugador es: " + session.getId());
-
-				if (this.verifyPlay(session, number1, number2, posicionTablero)) {
-					quitarFichaMano();
-					this.notifyPlay(session, posicionTablero);
-					return this.notifyNext(session);
+				FichaDomino f = this.getHigherDouble(this.fichasJugadores);
+				if(f==null || this.tablero.isEmpty() && !fichaColocada.iguales(f)) {
+					this.notifyInvalidPlay(session, "Usa el mayor doble");				
 				} else {
-					this.notifyInvalidPlay(session, "Jugada inválida");
+					log.info("\nEl jugador " + this.getNamePlayerSession(session));
+					log.info("\nFicha colocada: " + this.fichaColocada.getNumber1() + " | "
+							+ this.fichaColocada.getNumber2());
+					log.info("\nLa ficha pertenece al jugador con la sesion: "
+							+ this.fichaColocada.getState().getUser().getSession().getId());
+					log.info("\nLa sesion del jugador es: " + session.getId());
+	
+					if (this.verifyPlay(session, number1, number2, posicionTablero)) {
+						quitarFichaMano();
+						this.notifyPlay(session, posicionTablero);
+						return this.notifyNext(session);
+					} else {
+						this.notifyInvalidPlay(session, "Jugada inválida");
+					}
 				}
 			}
 		} else {
