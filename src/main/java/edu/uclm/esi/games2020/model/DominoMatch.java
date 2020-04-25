@@ -466,7 +466,7 @@ public class DominoMatch extends Match {
 	private FichaDomino find(FichaDomino doble, List<FichaDomino> fichas) {
 
 		for (FichaDomino ficha : fichas) {
-			if (ficha.equals(doble)) {
+			if (ficha.iguales(doble)) {
 				return ficha;
 			}
 		}

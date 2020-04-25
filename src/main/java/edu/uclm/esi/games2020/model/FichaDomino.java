@@ -44,8 +44,7 @@ public class FichaDomino {
 		this.state = state;
 	}
     	
-	@Override
-	public boolean equals(Object other) {
+	public boolean iguales(Object other) {
 		return (this.getNumber1() == ((FichaDomino) other).getNumber1() && this.getNumber2() == ((FichaDomino) other).getNumber2());
 	} 
 	
