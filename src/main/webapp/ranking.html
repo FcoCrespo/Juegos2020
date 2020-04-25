@@ -19,6 +19,10 @@
 	    float: none;
 	    margin: 0 auto;
 	}
+	td
+{
+    padding:0 15px;
+}
 </style>
 </head>
 
@@ -31,7 +35,7 @@
 </div>
 
 <div class="jumbotron text-center">
-<table class="rank-table" style="border:1px solid black;margin-left:auto;margin-right:auto;">
+<table border="1" id="rank-table" style="border:1px solid black;margin-left:auto;margin-right:auto;">
     <thead>
         <tr>
             <th>Rank</th>
@@ -42,9 +46,6 @@
     <tbody>
     </tbody>
 </table>
-
-	<h2 id="nombreUsuario"></h2>
-	<h2 id="cuenta"></h2>
 </div>
 
 <script>
@@ -60,14 +61,22 @@
 		getRankedUsers();
 	});	
 	
-	function getUser() {
-		$.get("getUser", function(datos) {
-	        var nombreUsuario =  datos[0];
-	        var cuenta =  datos[1];
-	        console.log('nombreUsuario: '+nombreUsuario);
-	        console.log('cuenta: '+cuenta);
-	        document.getElementById("nombreUsuario").textContent = 'Bienvenido ' + nombreUsuario;
-	        document.getElementById("cuenta").textContent = '(Decrypt Credit Account): ' + cuenta;
+	function getRankedUsers() {
+		$.get("getRankedUsers", function(datos) {
+	        
+	        for (let i = 0; i < datos.length; i+=2) {
+	        	
+	        	var number = i/2 +1;
+	        	console.log(number)
+	        	row = table.insertRow(number);
+	        	rank_cell = row.insertCell(0);
+	        	username_cell = row.insertCell(1);
+	        	wins_cell = row.insertCell(2);
+	        	rank_cell.innerHTML = number;
+	        	username_cell.innerHTML = datos[i];
+	        	wins_cell.innerHTML = datos[i+1];
+	        	  
+	        }
 		});
 	}
 </script>

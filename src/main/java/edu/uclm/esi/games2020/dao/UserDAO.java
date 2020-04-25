@@ -6,6 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import edu.uclm.esi.games2020.model.*;
 
 public class UserDAO {
@@ -83,6 +86,31 @@ public class UserDAO {
         return null;
 
     }
+    
+	public static JSONArray getRankedUsers() {
+		JSONArray jsa = new JSONArray();
+        try (WrapperConnection bd = Broker.get().getBd()) {
+            String sql = "SELECT user_name, wins " +
+                    "FROM user";
+            try (PreparedStatement ps = bd.prepareStatement(sql)) {
+                try (ResultSet rs = ps.executeQuery()) {
+                	String username;
+                    int wins;                    
+                    while (rs.next()) {
+                        username = rs.getString(1);
+                        wins = rs.getInt(2);
+                        jsa.put(username);
+                        jsa.put(Integer.toString(wins));
+                    }
+                    return jsa;                    
+                }
+
+            }
+        } catch (Exception e1) {
+            log.info("\nError al obtener email");
+            return null;
+        }
+	}
     
     public static void cambiarPass(String email, String pwd)  {
     	try (WrapperConnection bd = Broker.get().getBd()) {
