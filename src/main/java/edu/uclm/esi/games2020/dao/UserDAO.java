@@ -52,13 +52,14 @@ public class UserDAO {
 						user.setCuenta(rs.getString(3));
 
 						return user;
-					} else
+					} else {
 						throw new SQLException();
+					}
 				}
+			} catch (Exception e) {
+				log.info("\nError al identificar usuario");
+				return null;
 			}
-		} catch (Exception e) {
-			log.info("\nError al identificar usuario");
-			return null;
 		}
 	}
 

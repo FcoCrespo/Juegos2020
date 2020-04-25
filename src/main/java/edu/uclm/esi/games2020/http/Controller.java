@@ -116,7 +116,7 @@ public class Controller {
     @GetMapping("/getRankedUsers")
     public JSONArray getRankedUsers(HttpSession session){
     	log.info("\nLa sesión actual del usuario tras conectarse es: "+session.getId());
-        return Manager.get().getRankedUsers(session);
+        return Manager.get().getRankedUsers();
     }
     
 
