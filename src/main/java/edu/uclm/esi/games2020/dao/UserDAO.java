@@ -111,6 +111,21 @@ public class UserDAO {
             return null;
         }
 	}
+	
+    public static void updateWins(String username, int wins)  {
+    	try (WrapperConnection bd = Broker.get().getBd()) {
+            String sql = "update user set wins = ? where user_name = ?";
+            try (PreparedStatement ps = bd.prepareStatement(sql)) {
+                ps.setInt(1, wins);
+                ps.setString(2, username);
+                ps.executeUpdate();
+            }
+
+        } catch (Exception e) {
+        	log.info("\n"+e.getMessage());
+        	log.info("\nError al actualizar victorias");
+		}
+    }
     
     public static void cambiarPass(String email, String pwd)  {
     	try (WrapperConnection bd = Broker.get().getBd()) {
