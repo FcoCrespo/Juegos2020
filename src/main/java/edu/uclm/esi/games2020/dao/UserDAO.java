@@ -91,7 +91,7 @@ public class UserDAO {
 		JSONArray jsa = new JSONArray();
         try (WrapperConnection bd = Broker.get().getBd()) {
             String sql = "SELECT user_name, wins " +
-                    "FROM user";
+                    "FROM user ORDER BY wins DESC";
             try (PreparedStatement ps = bd.prepareStatement(sql)) {
                 try (ResultSet rs = ps.executeQuery()) {
                 	String username;
