@@ -127,8 +127,7 @@ public class DominoMatch extends Match {
 			if (this.fichaColocada == null) {
 				this.notifyInvalidPlay(session, "La ficha no existe");
 			} else {
-				FichaDomino f = this.getHigherDouble(this.fichasJugadores);
-				if(f==null || this.tablero.isEmpty() && !fichaColocada.iguales(f)) {
+				if(this.isBadFirstMovement(this.fichaColocada, this.fichasJugadores)) {
 					this.notifyInvalidPlay(session, "Usa el mayor doble");				
 				} else {
 					log.info("\nEl jugador " + this.getNamePlayerSession(session));
@@ -448,6 +447,11 @@ public class DominoMatch extends Match {
 		if (f != null)
 			return f.getState().getUser();
 		return null;
+	}
+	
+	private boolean isBadFirstMovement(FichaDomino f, List<FichaDomino> fichas) {
+		
+		return (this.getHigherDouble(fichas)==null || this.tablero.isEmpty() && !f.iguales(this.getHigherDouble(fichas)));		
 	}
 
 	private FichaDomino getHigherDouble(List<FichaDomino> fichas) {
