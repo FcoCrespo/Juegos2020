@@ -22,6 +22,8 @@ public class User implements Serializable{
     @NoJSON
     private String cuenta;
     @NoJSON
+    private int wins;
+    @NoJSON
     private transient WebSocketSession session;
     @NoJSON
     private transient IState state;
@@ -62,7 +64,15 @@ public class User implements Serializable{
         this.cuenta = cuenta;
     }
 
-    public static User identify(String userName, String pwd){
+    public int getWins() {
+		return wins;
+	}
+
+	public void setWins(int wins) {
+		this.wins = wins;
+	}
+
+	public static User identify(String userName, String pwd){
     	try {
     		return UserDAO.identify(userName, pwd);
     	}

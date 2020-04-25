@@ -142,6 +142,19 @@ public class Manager {
 		return result;
 	}
 
+	public JSONArray getRankedUsers(HttpSession session) {
+		Collection<User> userList = this.connectedUsersByHttpSession.values();
+		JSONArray result = new JSONArray();
+		for (User user : userList)
+			if(user.getHttpSession().getId().equals(session.getId())) {
+				log.info("El nombre del usuario es: "+user.getUserName());
+				result.put(user.getUserName());
+				result.put(user.getCuenta());
+			}
+		
+		return result;
+	}
+	
 	public int changePass(String token, String pass) {
 		
 		

@@ -17,7 +17,7 @@ public class UserDAO {
 
     public static void insert(String email, String userName, String pwd, String cuenta){
         try (WrapperConnection bd = Broker.get().getBd()) {
-            String sql = "insert into user (email, user_name, pwd) values (?, ?, AES_ENCRYPT(?, 'software'))";
+            String sql = "insert into user (email, user_name, pwd, wins) values (?, ?, AES_ENCRYPT(?, 'software'), 0)";
             try (PreparedStatement ps = bd.prepareStatement(sql)) {
                 ps.setString(1, email);
                 ps.setString(2, userName);
