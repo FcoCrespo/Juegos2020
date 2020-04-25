@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.logging.Logger;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import edu.uclm.esi.games2020.model.*;
 
