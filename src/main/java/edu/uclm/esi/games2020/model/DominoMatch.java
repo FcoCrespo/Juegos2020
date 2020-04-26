@@ -219,7 +219,7 @@ public class DominoMatch extends Match {
 	public int winner(WebSocketSession session, int id) {
 		if (!manoSinFichas(session)) {
 			return id;
-		} else if (this.deck.getFichas().isEmpty() && this.tablero.isEmpty()) {
+		} else if (this.deck.getFichas().isEmpty() && !this.tablero.isEmpty()) {
 			boolean continuar = posibleColocacion();
 			if (!continuar) {
 
